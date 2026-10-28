@@ -1191,6 +1191,7 @@
 <script src="../scripts/components/tcc-popup.js" defer></script>
 <script src="../scripts/components/lista-espera.js" defer></script>
 <script src="../scripts/components/how-it-works.js" defer></script>
+<script src="../scripts/components/swipe.js"></script>
 
 <script>
   /* authState gerenciado por auth.js */
@@ -1327,6 +1328,25 @@
     /* Arrow navigation */
     document.getElementById('team-prev').addEventListener('click', function () { goTo(cur - 1); });
     document.getElementById('team-next').addEventListener('click', function () { goTo(cur + 1); });
+
+    /* Swipe no celular: o card ativo segue o dedo e, ao soltar além do
+       limite, o carrossel vira. Os estilos inline só existem durante o
+       arraste; ao limpá-los a transição do CSS leva o card ao destino. */
+    if (window.KerdosSwipe) {
+      KerdosSwipe(track, {
+        onStart: function () { cards[cur].style.transition = 'none'; },
+        onMove: function (dx) {
+          var c = cards[cur];
+          c.style.transform = 'translateX(' + dx + 'px) scale(' + (1 - Math.min(Math.abs(dx) / 1600, 0.08)) + ')';
+          c.style.opacity = Math.max(0.45, 1 - Math.abs(dx) / 520);
+        },
+        onEnd: function (dir) {
+          var c = cards[cur];
+          c.style.transition = ''; c.style.transform = ''; c.style.opacity = '';
+          if (dir) goTo(cur - dir);
+        }
+      });
+    }
 
     /* Team popup */
     var popupOverlay = document.getElementById('team-popup-overlay');
@@ -1536,8 +1556,9 @@
       function next() {
         if (token !== runToken) return;          // superseded
         if (i >= turns.length) {                  // conversa completa → segura e vira pra próxima tela
-          later(function () {
+          later(function advance() {
             if (token !== runToken) return;
+            if (swipe && swipe.isDragging()) { later(advance, 300); return; } // não vira debaixo do dedo
             goTo(ORDER[(ORDER.indexOf(view) + 1) % ORDER.length]);
           }, HOLD_MS);
           return;
@@ -1631,6 +1652,31 @@
     document.querySelectorAll('.phone-toggle-btn').forEach(function (btn) {
       btn.addEventListener('click', function () { goTo(btn.dataset.view); });
     });
+
+    /* Swipe na tela do celular: a tela segue o dedo e, ao soltar além do
+       limite, vai para a vizinha pelo mesmo goTo das abas. Nas pontas
+       (WhatsApp ← / Kerdos App →) o arraste tem resistência e volta,
+       como um pager nativo. O track tem 300% de largura, então a conta
+       usa a largura da tela visível (o pai dele). */
+    var viewsTrack = document.querySelector('.phone-views-track');
+    var swipe = null;
+    if (viewsTrack && window.KerdosSwipe) {
+      var screenW = function () { return viewsTrack.parentElement.clientWidth; };
+      swipe = KerdosSwipe(viewsTrack, {
+        width: screenW,
+        onStart: function () { viewsTrack.style.transition = 'none'; },
+        onMove: function (dx) {
+          var i = ORDER.indexOf(activeView);
+          if ((i === 0 && dx > 0) || (i === ORDER.length - 1 && dx < 0)) dx /= 3;
+          viewsTrack.style.transform = 'translateX(' + (dx - i * screenW()) + 'px)';
+        },
+        onEnd: function (dir) {
+          viewsTrack.style.transition = ''; viewsTrack.style.transform = '';
+          var i = ORDER.indexOf(activeView) - dir;
+          if (dir && i >= 0 && i < ORDER.length) goTo(ORDER[i]);
+        }
+      });
+    }
   })();
 
   /* UPGRADE TOAST — aparece após 15s, dispensável */

@@ -117,6 +117,45 @@
     });
 
     form.addEventListener('submit', aoEnviar);
+
+    barra = document.createElement('div');
+    barra.className = 'le-barra';
+    barra.setAttribute('aria-hidden', 'true');
+    card.appendChild(barra);
+    card.addEventListener('scroll', function () { atualizarBarra(); mostrarBarra(); }, { passive: true });
+    window.addEventListener('resize', atualizarBarra);
+    /* Erros de validação e a tela de sucesso mudam a altura do conteúdo. */
+    if (window.ResizeObserver) {
+      var ro = new ResizeObserver(atualizarBarra);
+      ro.observe(form);
+      ro.observe(overlay.querySelector('.le-sucesso'));
+    }
+  }
+
+  /* ── Barra de rolagem do card (estilo em lista-espera.css) ──
+     A barra é filha do próprio card, que é quem rola, então soma o
+     scrollTop para ficar parada na tela. MARGEM_BARRA a mantém longe
+     da curva dos cantos (raio de 20–22px). */
+  var MARGEM_BARRA = 16;
+  var barra, timerBarra;
+
+  function atualizarBarra() {
+    if (!barra) return;
+    var visivel = card.clientHeight;
+    var sobra = card.scrollHeight - visivel;
+    if (sobra <= 1) { barra.style.display = 'none'; return; }
+    barra.style.display = '';
+    var trilho = visivel - MARGEM_BARRA * 2;
+    var altura = Math.max(28, trilho * visivel / card.scrollHeight);
+    var topo = MARGEM_BARRA + (trilho - altura) * Math.min(1, card.scrollTop / sobra);
+    barra.style.height = altura + 'px';
+    barra.style.transform = 'translateY(' + (card.scrollTop + topo) + 'px)';
+  }
+
+  function mostrarBarra() {
+    barra.classList.add('is-visivel');
+    clearTimeout(timerBarra);
+    timerBarra = setTimeout(function () { barra.classList.remove('is-visivel'); }, 800);
   }
 
   /* ── Abrir / fechar ── */
@@ -127,6 +166,11 @@
     overlay.setAttribute('aria-hidden', 'false');
     document.documentElement.style.overflow = 'hidden';
     setTimeout(function () { form.elements.nome.focus(); }, 60);
+    /* Se o card rola, a barra pisca na abertura para avisar que há mais. */
+    setTimeout(function () {
+      atualizarBarra();
+      if (barra.style.display !== 'none') mostrarBarra();
+    }, 400);
   }
 
   function fechar() {

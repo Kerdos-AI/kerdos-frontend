@@ -38,6 +38,23 @@
 }
 .le-overlay.is-open .le-card { transform: none; }
 
+/* Barra de rolagem própria do card. A nativa é desenhada pelo
+   navegador de ponta a ponta e atravessa a curva dos cantos; esta
+   é posicionada pelo lista-espera.js com folga em cima e embaixo,
+   então nunca sai do card. Aparece ao rolar e some quando para. */
+.le-card { scrollbar-width: none; }
+.le-card::-webkit-scrollbar { display: none; width: 0; height: 0; }
+.le-barra {
+  position: absolute; top: 0; right: 5px;
+  width: 3px; border-radius: 999px;
+  background: rgba(var(--brand-tint-rgb, 228,156,0), 0.6);
+  opacity: 0;
+  transition: opacity 0.45s ease;
+  pointer-events: none;
+  z-index: 2;
+}
+.le-barra.is-visivel { opacity: 1; transition-duration: 0.12s; }
+
 .le-fechar {
   position: absolute; top: 16px; right: 16px;
   width: 32px; height: 32px; border-radius: 50%;
