@@ -141,12 +141,8 @@ module.exports = async function handler(req, res) {
       body: JSON.stringify({
         nome,
         telefone: '55' + telefone,
-        telefone_local: telefone,
         email,
-        interesses,
-        origem: 'landing_tcc_qrcode',
-        ip_hash: ip.split('.').slice(0, 3).join('.') + '.xxx',
-        created_at: new Date().toISOString()
+        interesses
       }),
       signal: controller.signal
     });
