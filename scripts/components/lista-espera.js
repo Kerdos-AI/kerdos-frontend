@@ -20,7 +20,7 @@
 (function () {
   'use strict';
 
-  var ENDPOINT = '';
+  var ENDPOINT = '/api/waitlist';
 
   var LIMITES = { nome: 120, email: 160 };
 
@@ -233,12 +233,12 @@
   }
 
   function enviar(dados) {
+    var local = /^(localhost|127\.0\.0\.1)$/.test(location.hostname);
+    if (local) {
+      console.warn('[lista-espera] Modo local detectado: envio simulado em localhost.', dados);
+      return new Promise(function (ok) { setTimeout(ok, 700); });
+    }
     if (!ENDPOINT) {
-      var local = /^(localhost|127\.0\.0\.1)$/.test(location.hostname);
-      if (local) {
-        console.warn('[lista-espera] ENDPOINT vazio: envio simulado em localhost.', dados);
-        return new Promise(function (ok) { setTimeout(ok, 700); });
-      }
       return Promise.reject(new Error('ENDPOINT não configurado'));
     }
     return fetch(ENDPOINT, {
