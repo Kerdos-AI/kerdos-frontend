@@ -1,0 +1,75 @@
+/* ════════════════════════════════════════════════════════════
+   scrollbar.css — a barra de rolagem dourada do produto.
+
+   Vale para o site e para o app: carregue em toda página, sempre
+   DEPOIS dos outros CSS. Os seletores aqui são universais, então
+   qualquer barra interna com estilo próprio (sidebar, mensagens,
+   drawers) continua vencendo por especificidade.
+
+   O cabeçalho antigo dizia "cores literais de propósito: este
+   arquivo é carregado em páginas que não conhecem os tokens do
+   shell logado". Isso deixou de ser verdade: theme.css é a
+   primeira folha das 10 páginas, então os tokens existem em toda
+   parte. Consuma var(--brand*) aqui — e não volte a adicionar
+   literal "por segurança".
+
+   Junto com isso foram embora as 3 regras html.light-mode que
+   este arquivo mantinha: --brand-ink já escurece sozinho.
+════════════════════════════════════════════════════════════ */
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(var(--brand-tint-rgb, 228,156,0), 0.55) transparent;
+}
+
+::-webkit-scrollbar {
+  width: 11px;
+  height: 11px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  /* border transparente + background-clip = polegar fino com folga nas bordas */
+  background: linear-gradient(180deg,
+    rgba(var(--brand-bright-rgb, 255,204,0), 0.5),
+    rgba(var(--brand-tint-rgb, 228,156,0), 0.75));
+  background-clip: padding-box;
+  border: 3px solid transparent;
+  border-radius: 999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, var(--brand-bright), var(--brand));
+  background-clip: padding-box;
+  border: 2px solid transparent;
+  box-shadow: 0 0 10px rgba(var(--brand-tint-rgb, 228,156,0), 0.35);
+}
+::-webkit-scrollbar-thumb:active {
+  background: linear-gradient(180deg, var(--brand), var(--brand-active));
+  background-clip: padding-box;
+  border: 2px solid transparent;
+}
+::-webkit-scrollbar-corner {
+  background: transparent;
+}
+/* Setinhas das pontas: fora — a barra é só o trilho e o polegar */
+::-webkit-scrollbar-button {
+  display: none;
+  width: 0;
+  height: 0;
+}
+
+/* Página sem barra visível (hoje só a landing). A rolagem continua
+   funcionando por roda, toque e teclado; só o trilho some. A barra
+   da página é do <html>, não do <body>, por isso o :has: a classe fica
+   no <body> para não tocar na tag <html>, cujas classes são escritas
+   pelos snippets anti-FOUC. scrollbar-width cobre Firefox e o Chrome
+   moderno; o ::-webkit-scrollbar cobre Safari. */
+html:has(> body.sem-scrollbar) {
+  scrollbar-width: none;
+}
+html:has(> body.sem-scrollbar)::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+}

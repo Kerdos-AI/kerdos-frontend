@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Só a landing entra aqui: é a única página do site. A URL é a mesma
+  do <link rel="canonical"> de pages/home.html; se uma mudar, mude a
+  outra. Atualize o lastmod quando o conteúdo da página mudar.
+-->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://kerdos.com.br/pages/home.html</loc>
+    <lastmod>2026-10-28</lastmod>
+  </url>
+</urlset>

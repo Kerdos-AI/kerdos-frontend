@@ -1,0 +1,13 @@
+# robots.txt — landing da Kerdos Finance
+#
+# O site tem uma página só (pages/home.html), então tudo é público.
+# CSS, JS e assets ficam liberados de propósito: sem eles o Googlebot
+# renderiza a página sem estilo.
+#
+# Bots de LLM também estão liberados: queremos que a Kerdos apareça
+# em respostas de assistentes. O resumo para eles está em /llms.txt.
+
+User-agent: *
+Allow: /
+
+Sitemap: https://kerdos.com.br/sitemap.xml

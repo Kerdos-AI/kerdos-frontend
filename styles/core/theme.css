@@ -1,0 +1,1197 @@
+/* ════════════════════════════════════════════════════════════
+   theme.css — FONTE ÚNICA DA VERDADE de cor do Kerdos Finance.
+
+   Deve ser a PRIMEIRA folha de estilo de toda página.
+
+   Regra de ouro: nenhum outro arquivo declara uma cor literal.
+   Componentes consomem só var(--token). Se um componente precisa
+   de uma cor que não existe aqui, o conserto é adicionar o token
+   — nunca um `html.light-mode … !important`. Aquela camada é o
+   que mantinha o modo claro quebrado: 101 overrides tentando
+   vencer 1.179 literais espalhados por 13 arquivos, e cada
+   componente novo nascia quebrado no claro.
+
+   ── AS QUATRO CAMADAS ───────────────────────────────────────
+   1. Primitivas — a paleta bruta. Iguais nos dois temas.
+   2. Canais + alphas — tinta, linha, véu como triplas RGB mais
+      degraus de opacidade. Trocar de tema troca o canal.
+   3. Semânticas — o que o produto realmente consome, pelo papel
+      que a cor exerce (--surface-1, --ink-2, --brand-ink).
+   4. Aliases — os nomes legados, mapeados sobre a camada 3.
+════════════════════════════════════════════════════════════ */
+
+
+/* ════════════════════════════════════════════════════════════
+   CAMADA 1 — PRIMITIVAS
+   A paleta bruta. Não consuma direto: use a camada 3.
+════════════════════════════════════════════════════════════ */
+:root {
+  --k-gold-900: #6B4400;
+  --k-gold-800: #8A5800;
+  --k-gold-700: #9A6000;
+  --k-gold-600: #C08300;
+  --k-gold-500: #E49C00;
+  --k-gold-400: #F5BE4A;
+  --k-gold-300: #FFCC00;
+
+  --k-green-500: #2DD68A;
+  --k-green-700: #1B7A55;
+  --k-red-500:   #E55252;
+  --k-red-700:   #B3322F;
+  --k-in-500:    #4FAF85;
+  --k-out-500:   #D9635C;
+
+  --k-ink-dark: #1A1917;
+  --k-paper:    #FAF9F7;
+
+  /* Papel do QR Code. Não é token de tema de propósito: é branco nos
+     dois modos porque QR invertido (claro sobre escuro) falha em boa
+     parte dos leitores de câmera. */
+  --k-qr-paper: #FFFFFF;
+
+  --font:         'Space Grotesk', sans-serif;
+  --ease-premium: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+
+/* ════════════════════════════════════════════════════════════
+   CAMADA 2 — CANAIS + DEGRAUS DE ALPHA
+
+   Por que canais e não cores prontas: existem ~580 sites de
+   rgba(255,255,255,α) no repo. Reescrevê-los como
+   rgba(var(--ink-rgb), var(--a-ink-N)) troca de tema o arquivo
+   inteiro de uma vez.
+
+   POR QUE OS ALPHAS DO CLARO NÃO ESPELHAM OS DO ESCURO:
+   alpha não é simétrico. rgba(255,255,255,.45) sobre #0C0C0B dá
+   4.50:1; o "espelho" rgba(26,25,23,.45) sobre #FAF9F7 dá só
+   2.88:1 — reprovaria AA em todos os ~110 sites de texto
+   secundário. Os valores abaixo foram resolvidos para IGUALAR o
+   contraste medido do escuro, não para preservar o número.
+════════════════════════════════════════════════════════════ */
+:root {
+  /* Escuro — tinta branca neutra. Estes são exatamente os
+     valores que os 468 rgba(255,255,255,…) do app já usam,
+     então a conversão é literalmente pixel-idêntica. */
+  --ink-rgb:        255, 255, 255;
+  --veil-rgb:       255, 255, 255;
+  --line-rgb:       255, 255, 255;
+  --brand-tint-rgb: 228, 156, 0;
+  --brand-bright-rgb: 255, 204, 0;
+  --ok-rgb:         45, 214, 138;
+  --danger-rgb:     229, 82, 82;
+
+  /* Dois canais de vidro, separados pelo PAPEL que exercem:
+
+     --card-rgb  é o card EMBUTIDO na página (team card, how-card,
+                 card de plano, card do app). Precisa se destacar
+                 do papel — e é aqui que o escuro e o claro pedem
+                 coisas opostas: no escuro um painel a .52 sobre
+                 quase-preto separa sozinho; no claro o mesmo .52
+                 de branco sobre #FAF9F7 simplesmente some. Por
+                 isso o claro usa um tom TINTADO, mais escuro que
+                 a página, e a separação vem do contraste, não da
+                 luz.
+     --panel-rgb é a superfície FLUTUANTE (modal, gaveta, popover,
+                 toast). Vive sobre um scrim, então continua
+                 quase-branca no claro: é ela que precisa ler como
+                 "acima de tudo".
+
+     No escuro os dois coincidem — lá a distinção não existe. */
+  --card-rgb:       20, 20, 22;
+  --panel-rgb:      20, 20, 22;
+
+  /* Scrim = o véu atrás de um modal. Escurece nos dois temas
+     (é isso que empurra o conteúdo para trás), mas no claro
+     precisa de bem menos força; daí o multiplicador. */
+  --scrim-rgb:      0, 0, 0;
+  --scrim-k:        1;
+
+  --a-ink-1: .85;   /* texto forte não-branco     */
+  --a-ink-2: .65;   /* texto secundário           */
+  --a-ink-3: .45;   /* texto muted / label        */
+  --a-ink-4: .28;   /* placeholder / decorativo   */
+  --a-ink-5: .12;   /* fantasma                   */
+
+  --a-line:   .07;  /* hairline padrão            */
+  --a-line-2: .12;  /* hairline em hover/foco     */
+
+  --a-veil-1: .03;  /* preenchimento sutil        */
+  --a-veil-2: .05;
+  --a-veil-3: .08;
+
+  --a-spec: .06;    /* brilho especular no topo   */
+}
+
+html.light-mode {
+  /* Claro — a tinta é o marrom-tinta da marca, não preto puro.
+     --line-rgb é ainda mais quente (42,34,18) para que as
+     hairlines derivadas caiam perto de #E4E0D9 em vez de num
+     cinza frio. */
+  --ink-rgb:        26, 25, 23;
+  --veil-rgb:       26, 25, 23;
+  --line-rgb:       42, 34, 18;
+  --brand-tint-rgb: 168, 104, 0;
+  --brand-bright-rgb: 217, 164, 0;
+  --ok-rgb:         27, 122, 85;
+  --danger-rgb:     179, 50, 47;
+  --card-rgb:       228, 224, 217;   /* #E4E0D9 — recalibrado (ROYAL):
+                                       estava 6,20 L* abaixo do papel
+                                       antigo; este valor fica 6,20 L*
+                                       abaixo do papel novo, mesma
+                                       relação, hue mantido */
+  --panel-rgb:      251, 249, 244;   /* #FBF9F4 — flutuante (ROYAL) */
+  --scrim-rgb:      26, 25, 23;
+  --scrim-k:        .62;
+
+  --a-ink-1: .94;   /* ~15:1 sobre papel              */
+  --a-ink-2: .79;   /* ~8.7:1                         */
+  --a-ink-3: .64;   /* texto usa --ink-3 sólido; isto é traço/fundo */
+  --a-ink-4: .39;   /* idem --ink-4; em alpha só gráficos e pontos  */
+  --a-ink-5: .18;
+
+  /* --a-line dá --line via fórmula (rgba(42,34,18,.13), alvo ROYAL).
+     --a-line-2 NÃO alimenta mais --line-strong (ver abaixo, virou
+     literal direto) — sobrou só para o contorno de controle (input,
+     chips, --border-hover), que segue com piso próprio de
+     3:1. Remedido contra o papel novo: .49 dava só 2,99:1 (o papel
+     mais escuro tira, não dá, folga — o oposto do esperado). .50 é o
+     menor valor que volta a bater 3:1 (3,07:1). */
+  --a-line:   .13;
+  --a-line-2: .50;
+
+  --a-veil-1: .025;
+  --a-veil-2: .045;
+  --a-veil-3: .075;
+
+  --a-spec: .85;    /* no claro o specular é branco quase opaco */
+}
+
+
+/* ════════════════════════════════════════════════════════════
+   CAMADA 3 — SEMÂNTICAS
+   O contrato real. É isto que os componentes consomem.
+════════════════════════════════════════════════════════════ */
+:root {
+  color-scheme: dark;
+
+  /* Superfícies, do fundo para a frente */
+  --surface-0:       #0C0C0B;
+  --surface-1:       #111110;
+  --surface-2:       #181816;
+  --surface-3:       #1A1A18;
+  --surface-panel:   #3A3A3F;
+  --surface-overlay: #1A1A18;
+
+  /* Tinta */
+  --ink:        #EDE9E0;
+  --ink-strong: #FFFFFF;
+  --ink-2:      rgba(var(--ink-rgb), var(--a-ink-2));
+  --ink-3:      rgba(var(--ink-rgb), var(--a-ink-3));
+  --ink-4:      rgba(var(--ink-rgb), var(--a-ink-4));
+
+  /* Linhas */
+  --line:        rgba(var(--line-rgb), var(--a-line));
+  --line-strong: rgba(var(--line-rgb), var(--a-line-2));
+
+  /* Marca — SPLIT deliberado.
+     --brand é PREENCHIMENTO (fundo de botão, arco de gráfico,
+     traço de linha): fica #E49C00 nos dois temas, a identidade
+     não muda. --brand-ink é TEXTO E ÍCONE: precisa escurecer no
+     claro, senão dourado sobre papel dá 2.2:1. */
+  --brand:        #E49C00;
+  --brand-ink:    #E49C00;
+  /* Azulejo das logos de banco (assets/bancos/*.svg). Logo de terceiro
+     vem na cor da marca, e várias são pretas (C6, XP, BTG): direto sobre
+     o fundo escuro elas somem. Por isso o azulejo é branco nos DOIS
+     temas — no claro ele se confunde com o papel e a logo parece solta,
+     como no app do banco; no escuro vira ícone. Só no selo do dropdown:
+     no card a logo é impressa na tinta do metal (ver .ag-cc-logo). */
+  --banco-logo-bg:   #FFFFFF;
+  --banco-logo-line: rgba(0,0,0,.08);
+  /* Gold de HEADLINE DE DISPLAY (≥40px). No escuro é o mesmo --brand-ink
+     de sempre, então nada muda lá. Existe por causa do claro: ali
+     --brand-ink é o marrom #9A6000, certo pra texto pequeno e médio
+     (onde contraste de leitura manda) e errado pra display — no tamanho
+     grande o marrom mata o impacto e lê como tinta suja, não como ouro. */
+  --brand-display: var(--brand-ink);
+  --display-glow:  0 0 40px rgba(var(--brand-tint-rgb, 228,156,0), 0.25);
+  --brand-ink-rgb: 228, 156, 0;   /* mesma tinta em forma de canal */
+  --brand-data:   #E49C00;        /* marca GRÁFICA: traço de linha,
+                                     arco de donut, régua fina. Fica
+                                     entre o fill e a tinta — precisa
+                                     ser visível, mas é dado, não texto */
+  --brand-hover:  #F5BE4A;
+  --brand-bright: #FFCC00;
+  --brand-active:  #C88700;  /* pressionado — sempre um passo mais fundo */
+  --on-brand:     #1A1A18;   /* tinta SOBRE preenchimento dourado */
+  --on-ok:        #0C0C0B;   /* tinta sobre preenchimento verde   */
+  --on-danger:    #FFFFFF;   /* tinta sobre preenchimento vermelho */
+
+  /* Semáforo — mesmo split: -ink é a variante legível como texto */
+  --ok:         #2DD68A;
+  --ok-ink:     #2DD68A;
+  --danger:     #E55252;
+  --danger-ink: #E55252;
+
+  /* Dinheiro (Argos) — o número mais importante da tela */
+  --money-in:  #4FAF85;
+  --money-out: #D9635C;
+  /* A mesma cor em triplo RGB. Quem precisa de PREENCHIMENTO com alpha
+     — o segmentado Gasto/Receita do modal de lançamento — não consegue
+     derivar isso de um hex, e sem o token acabaria declarando cor
+     literal fora deste arquivo. */
+  --money-in-rgb:  79, 175, 133;
+  --money-out-rgb: 217, 99, 92;
+
+  /* KPIs do Argos. No escuro o rótulo de 11px leva a cor do que ele
+     representa (saldo dourado, gasto vermelho, receita verde) e o
+     número fica neutro. */
+  --kpi-rotulo-marca:   var(--brand);
+  --kpi-rotulo-gasto:   var(--danger);
+  --kpi-rotulo-receita: var(--ok);
+  --kpi-num-gasto:      rgba(var(--ink-rgb), var(--a-ink-1));
+  --kpi-num-receita:    rgba(var(--ink-rgb), var(--a-ink-1));
+  --kpi-num-divida:     var(--ink-strong);
+
+  /* O "Olá," da tela inicial do Voithos (o nome usa --brand-ink) */
+  --greeting-ink: var(--ink-strong);
+
+  /* Rótulo grego dos planos (ESSENCIAL/AVANÇADO/ILIMITADO): a .35 é o
+     mesmo que o antigo opacity .35 sobre a tinta de marca. */
+  --plan-greek-ink: rgba(var(--brand-ink-rgb), .35);
+
+  /* Cores de terceiros usadas como TEXTO (o azul do Telegram no
+     bloco de vínculo). A identidade fica; o tom escurece no claro. */
+  --tg-ink: #2AABEE;
+  --tg-rgb: 34, 158, 217;
+
+  /* Setinha do <select>: a cor está cravada dentro do data-URI
+     (SVG embutido não enxerga var()), então a URL inteira é o
+     token e cada tema traz a sua. */
+  --chevron-select: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='rgba(255,255,255,0.5)' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+
+  /* Orbs de fundo */
+  --orb-rgb: 228, 156, 0;
+  --a-orb-1: .26;
+  --a-orb-2: .18;
+  --a-orb-3: .12;
+
+  /* Backgrounds completos dos 7 pontos que desenham orb: valor exato do
+     que cada elemento já tinha, só movido para token porque o claro
+     (abaixo) precisa de uma FORMA de curva diferente, não só de cor —
+     ver o comentário grande no bloco claro. Cada lobo referencia o
+     MESMO --a-orb-N que já referenciava (os números escritos como
+     fallback de var() nas declarações antigas nunca chegavam a valer —
+     --a-orb-N sempre está definida — então o valor real sempre foi
+     --a-orb-1/2/3, não os fallbacks; preservado aqui). */
+  --orb-bg-shell-a:
+    radial-gradient(44% 50% at 33% 37%, rgba(var(--orb-rgb), var(--a-orb-1)) 0%, transparent 70%),
+    radial-gradient(36% 40% at 64% 55%, rgba(var(--orb-rgb), var(--a-orb-2)) 0%, transparent 72%),
+    radial-gradient(30% 34% at 45% 75%, rgba(var(--orb-rgb), var(--a-orb-3)) 0%, transparent 74%);
+  --orb-bg-shell-b:
+    radial-gradient(40% 46% at 62% 40%, rgba(var(--orb-rgb), var(--a-orb-2)) 0%, transparent 72%),
+    radial-gradient(34% 38% at 36% 58%, rgba(var(--orb-rgb), var(--a-orb-3)) 0%, transparent 74%),
+    radial-gradient(28% 30% at 58% 74%, rgba(var(--orb-rgb), var(--a-orb-3)) 0%, transparent 76%);
+  --orb-bg-a: radial-gradient(circle, rgba(var(--orb-rgb), var(--a-orb-1)) 0%, transparent 68%);
+  --orb-bg-b: radial-gradient(circle, rgba(var(--orb-rgb), var(--a-orb-2)) 0%, transparent 68%);
+  --orb-bg-c: radial-gradient(circle, rgba(var(--orb-rgb), var(--a-orb-3)) 0%, transparent 68%);
+  --orb-bg-onb-a: radial-gradient(circle, rgba(var(--orb-rgb), var(--a-orb-1)) 0%, transparent 70%);
+  --orb-bg-onb-b: radial-gradient(circle, rgba(var(--orb-rgb), var(--a-orb-2)) 0%, transparent 70%);
+  --ob-orb-blur-a: 140px;
+  --ob-orb-blur-b: 175px;
+  --orb-blur-shell-a: 80px;
+  --orb-blur-shell-b: 100px;
+  --orb-blur: 80px;
+
+  /* Vinheta e grão são só do claro — no escuro o próprio fundo já é
+     a superfície mais escura do produto, uma vinheta ali não teria
+     papel nenhum pra desempenhar. */
+  --vignette-bg: none;
+  --orb-bg-core: none;
+
+  /* Orbs próprias da landing ("Como funciona") e das seções da página
+     de agentes. No escuro são a luz que desenha o palco de cada seção. */
+  --hiw-orb-1:    rgba(228,156,0,.15);
+  --hiw-orb-2:    rgba(255,204,0,.12);
+  --hiw-secao-bg: transparent;
+  --ag-orb-k:     1;      /* multiplica a opacidade da .ag-orb */
+  --ag-wash:      0%;     /* força do wash de acento no topo da seção */
+
+  /* Ω do Voithos (marca-voithos.css). No escuro o símbolo SOMA luz:
+     corpo translúcido que ganha opacidade a cada estado, varredura com
+     pico claro, contorno que acende com brilho. */
+  --marca-base:             rgba(228,156,0,.30);
+  --marca-base-escuta:      rgba(228,156,0,.38);
+  --marca-base-pensando:    rgba(228,156,0,.44);
+  --marca-base-pago:        rgba(228,156,0,.42);
+  --marca-pico:             rgba(255,204,0,.95);
+  --marca-pico-pensando:    rgba(255,204,0,1);
+  --marca-cauda:            rgba(228,156,0,.2);
+  --marca-contorno:         rgba(228,156,0,.45);
+  --marca-contorno-aceso:   #E49C00;
+  --marca-contorno-largura: 1.5;
+  --marca-brilho: drop-shadow(0 0 4px rgba(228,156,0,.75)) drop-shadow(0 0 14px rgba(228,156,0,.35));
+  --marca-halo:   drop-shadow(0 0 48px rgba(228,156,0,.16)) drop-shadow(0 2px 8px rgba(0,0,0,.4));
+
+  /* Vidro dourado da barra de mensagem e do botão enviar (voithos.css).
+     Mesma receita do Ω: corpo translúcido de ouro, aresta que acende no
+     topo e esmaece embaixo, halo em vez de sombra preta. A borda é um
+     gradiente (não dá com border-color), por isso vive num ::before
+     recortado por mask — as duas pontas do gradiente estão aqui. */
+  --vidro-barra-bg:      linear-gradient(180deg, rgba(228,156,0,.07) 0%, rgba(228,156,0,.02) 100%);
+  --vidro-barra-borda:   linear-gradient(135deg, rgba(255,204,0,.55) 0%, rgba(228,156,0,.18) 45%, rgba(228,156,0,.10) 70%, rgba(228,156,0,.40) 100%);
+  --vidro-barra-borda-foco: linear-gradient(135deg, rgba(255,204,0,.95) 0%, rgba(228,156,0,.45) 45%, rgba(228,156,0,.30) 70%, rgba(255,204,0,.75) 100%);
+  --vidro-barra-sombra:  inset 0 1px 0 rgba(255,220,140,.10), 0 0 32px rgba(228,156,0,.06);
+  --vidro-barra-sombra-foco: inset 0 1px 0 rgba(255,220,140,.16), 0 0 28px rgba(228,156,0,.16), 0 0 4px rgba(228,156,0,.25);
+  --vidro-blur:          blur(14px) saturate(1.3);
+  /* Botão contido: corpo quase chapado (sem brilho radial nem halo, que
+     liam como "botão gel" de 2005) — o vidro fica só no contorno fino
+     e num fio de luz no topo, do jeito que o Ω faz em repouso. */
+  --vidro-botao-bg:      linear-gradient(180deg, rgba(228,156,0,.20) 0%, rgba(228,156,0,.12) 100%);
+  --vidro-botao-bg-hover: linear-gradient(180deg, rgba(228,156,0,.28) 0%, rgba(228,156,0,.18) 100%);
+  --vidro-botao-sombra:  inset 0 0 0 1px rgba(228,156,0,.40), inset 0 1px 0 rgba(255,220,140,.14);
+  --vidro-botao-sombra-hover: inset 0 0 0 1px rgba(228,156,0,.65), inset 0 1px 0 rgba(255,220,140,.20), 0 0 10px rgba(228,156,0,.14);
+  --vidro-botao-tinta:   #E9A82A;
+
+  /* Layout */
+  --sidebar-w:  220px;
+  --shell-top:  88px;
+  --sidebar-bg: transparent;
+  --sidebar-shadow: none;
+  /* Gaveta do mobile (app-shell.css): flutua sobre a view e a tab bar,
+     então precisa de superfície opaca — o transparent acima deixaria o
+     conteúdo vazar por trás dos itens. */
+  --sidebar-drawer-bg: var(--surface-overlay);
+
+  /* Composição da tela inicial do Voithos e do onboarding. No escuro a
+     atmosfera faz o palco: o campo é só borda, o grupo fica no centro
+     geométrico e o passo do onboarding flutua direto no fundo. */
+  --field-surface:   transparent;
+  --welcome-desvio:  0px;
+  --ob-painel:       transparent;
+  --ob-painel-pad:   0px;
+  --ob-largura:      480px;
+  --ob-trilho:       var(--line);
+
+  /* Campo de formulário bloqueado (e-mail do modal de perfil). No
+     escuro: o campo inteiro a meia opacidade, como sempre foi. */
+  --locked-opacity:      .5;
+  --locked-ink:          var(--text);
+  --locked-border-style: solid;
+  --locked-icon:         none;
+  --locked-pad-right:    13px;
+
+  /* Glow gold de botão primário (Fase 12). Luz aditiva sobre preto —
+     vocabulário de dark. :root guarda os literais exatos que cada botão
+     já tinha; o bloco claro os apaga e devolve elevação de contato. */
+  --btn-primary-glow:       0 8px 24px rgba(228,156,0,.25);
+  --btn-primary-glow-hover: 0 12px 32px rgba(228,156,0,.4);
+  --mp-btn-glow:            0 2px 12px rgba(228,156,0,.3);
+  --mp-btn-glow-hover:      0 4px 18px rgba(228,156,0,.4);
+  --hiw-nbtn-glow-hover:    0 0 14px rgba(228,156,0,.3);
+}
+
+html.light-mode {
+  color-scheme: light;
+
+  /* Warm off-white premium — nunca #FFF puro como página: branco
+     puro em tela cheia ofusca e mata a hierarquia, porque não
+     sobra nada mais claro para elevar um card.
+     Quente, mas não sépia: card, sidebar, vidro e hairlines ficam
+     com hue 40 e ~metade da saturação que tinham (S 27–33% lia como
+     papel envelhecido). O corte preserva a LUMINÂNCIA de cada
+     superfície, então os degraus para o canvas não encolhem —
+     #F2F1EE, mais "limpo", clareava o card e comia 9% do degrau. */
+  /* ═══ ROYAL — papel escurece e aquece (decisão fechada em demo) ═══
+     #FAF9F7 → #F5F2EA. --surface-1/2/3 ficam (fora do escopo desta
+     rodada); --surface-panel, --card-rgb e --glass-bg recalibrados
+     abaixo para manter a MESMA distância de L* que tinham do canvas
+     antigo — sem isso card e vidro relativamente clareiam. */
+  --surface-0:       #F5F2EA;
+  --surface-1:       #F5F3EF;
+  --surface-2:       #F2F0EC;
+  --surface-3:       #F2F0EC;
+  --surface-panel:   #FBF9F4;
+  --surface-overlay: #FBF9F4;
+
+  --ink:        #1A1917;
+  --ink-strong: #0E0D0C;
+  /* Terciário e quaternário SÓLIDOS no claro. Em alpha o mesmo papel
+     renderizava quatro cinzas (#676664…#6B6A68) conforme a superfície
+     de baixo, e o quaternário ficava a 2,4:1 em texto de 10,5–12px.
+     Piso AA: o quaternário passa de 4,5:1 até sobre card e sidebar
+     (#F2F0ED); o terciário desce ~6 L* para os dois não se fundirem.
+     Traços e fundos que usam --a-ink-3/4 continuam em alpha. */
+  --ink-3: #5F5E5C;   /* 6,16:1 no canvas · 5,69:1 no card */
+  --ink-4: #696866;   /* 4,98 no papel · 4,53 SOB A ORB · 4,76 no card.
+                         Fase D: o valor antigo (#6D6C6A) foi calibrado
+                         contra o papel limpo, antes da atmosfera existir —
+                         media 4,69 no papel mas caía a 4,27 na região onde
+                         a orb pesa (#F3E7CB, medido em render só-atmosfera).
+                         O piso tem que valer no fundo real, não no teórico. */
+
+  /* ROYAL volta os dois pro canal (a versão sólida da fase anterior
+     fica pra trás): --line cai pra fórmula padrão (rgba(42,34,18,
+     var(--a-line)) = .13, acima). --line-strong é literal direto —
+     não deriva mais de --a-line-2, que agora serve só o contorno de
+     controle (que precisa de um piso de contraste bem maior, 3:1). */
+  --line-strong: rgba(42,34,18,.22);
+
+  --brand:        #E49C00;   /* FILL — intacto */
+  --brand-ink:    #945C00;   /* TEXTO — 4,95 no papel · 4,51 SOB A ORB ·
+                                4,74 no card. Fase D: #9A6000 passava no
+                                papel (4,64) e reprovava na região da orb
+                                (4,23). Não confundir com --brand-display,
+                                que é o ouro cheio de headline ≥40px. */
+  --brand-ink-rgb: 148, 92, 0;
+  /* X.1: display (≥40px) usa o ouro CHEIO, não o marrom de leitura. O
+     tamanho já resolve a legibilidade — a régua de 4,5:1 existe pra
+     texto corrido, não pra uma palavra de 62-96px. E o glow sai: luz
+     aditiva dourada atrás de ouro sobre papel não brilha, borra. */
+  --brand-display: var(--brand);
+  --display-glow:  none;
+  --lock-glow-bg:  none;
+  --lock-glow-blur: 0px;
+  /* E.4: gold chapado sobre papel lê adesivo. O gradiente dá volume e a
+     aresta de luz no topo dá a borda molhada do metal. */
+  --btn-metal-bg: linear-gradient(150deg, #F0B21E 0%, #E49C00 55%, #CE8A00 100%);
+  --btn-metal-aresta: inset 0 1px 0 rgba(255,246,222,.55);
+  --cadeado-traco: 1.9;   /* G.3 — ver plutos.css */
+
+  /* ── Fase H: sombras por PAPEL, não por valor ──────────────────────
+     As ~33 sombras ad-hoc do produto eram a geometria do escuro (blur
+     longo, sem camada de contato) multiplicada por --shadow-k (.22 no
+     claro). Isso não é uma sombra clara: é a sombra escura desligada.
+
+     Aqui elas passam a cair na escada --elev-*, que tem contato +
+     difusa pensados pro papel. O token é definido SÓ no claro; no
+     escuro cada componente cai no fallback inline, que é o literal
+     que ele já tinha — então o escuro fica byte-idêntico e R2 é
+     respeitado sem precisar julgar caso a caso. */
+  --sombra-contato:      var(--elev-1);   /* knob, pastilha, coisa pequena */
+  --sombra-vitrine:      var(--elev-2);   /* card de vitrine, tooltip     */
+  --sombra-vitrine-alta: var(--elev-3);   /* card grande, painel flutuante*/
+  --sombra-flutuante:    var(--elev-3);   /* popup, toast                 */
+  --sombra-mockup:       var(--elev-4);   /* mockup de app na landing     */
+  --brand-data:   #C08300;   /* 3.2:1 sobre papel — o mínimo de AA
+                                para elemento gráfico não-textual */
+  --brand-hover:  #C08300;   /* no claro o hover ESCURECE: afastar-se
+                                da página é escurecer, não clarear */
+  --brand-bright: #D9A400;
+  --brand-active:  #6B4400;
+  --on-brand:     #1A1A18;   /* 7.52:1 sobre #E49C00 — idêntico nos
+                                dois temas */
+
+  /* Fase F: #2DD68A e #E55252 são cores de modo escuro — saturadas e
+     claras. Sobre pergaminho o verde media 1,69:1 (como preenchimento
+     ele simplesmente some) e o vermelho gritava. Deslocados pra família
+     terrosa mantendo a semântica: musgo e terracota. A saturação cai de
+     67→33 no verde e de 74→51 no vermelho, e os dois passam do piso de
+     3:1 de elemento gráfico contra o papel, com o texto que vai por cima
+     deles acima de 4,5:1. O par -ink (texto) continua mais escuro ainda. */
+  --ok:         #4A9470;   /* musgo — 3,26 no papel · tinta escura em cima 4,78 */
+  --ok-ink:     #1A7652;   /* 5,00 no papel · 4,55 sob a orb · 4,78 no card
+                              (Fase D: #1B7A55 caía a 4,32 sob a orb) */
+  --danger:     #C0543F;   /* terracota — 4,10 no papel · branco em cima 4,58 */
+  --danger-ink: #B3322F;
+
+  --money-in:  #1B7A55;
+  --money-out: #B3322F;
+  --money-in-rgb:  27, 122, 85;
+  --money-out-rgb: 179, 50, 47;
+
+  /* No claro a cor sai do rótulo de 11px — preenchimento usado como
+     texto dava 1,8:1 (receita), 2,2:1 (saldo), 3,5:1 (gasto) — e vai
+     para o NÚMERO, em tinta -ink, onde o tamanho sobra. Rótulo vira
+     terciário uniforme. Saldo fica neutro de propósito: o dourado ali
+     era enfeite, não dado, e saldo negativo em dourado mentiria. */
+  --kpi-rotulo-marca:   var(--ink-3);
+  --kpi-rotulo-gasto:   var(--ink-3);
+  --kpi-rotulo-receita: var(--ink-3);
+  --kpi-num-gasto:      var(--money-out);
+  --kpi-num-receita:    var(--money-in);
+  --kpi-num-divida:     var(--money-out);
+
+  /* "Olá," recua para o secundário: em --ink-strong ele tinha 3,7× a
+     força do nome; em --ink-2 cai para ~1,7× e o nome volta a mandar. */
+  --greeting-ink: var(--ink-2);
+
+  /* Rótulo grego dos planos em tinta cheia: 10px caixa-alta não
+     aguenta alpha sobre papel. #9A6000 no card = 4,7:1. */
+  --plan-greek-ink: var(--brand-ink);
+
+  /* Sem glow no claro: some, e o botão ganha contato real (elev-1 em
+     repouso, elev-2 no hover — o mesmo degrau que qualquer superfície
+     elevada). Decisão registrada na Fase 12. */
+  /* Fase J: a aresta de luz entra AQUI, dentro do próprio token de sombra
+     do botão. Tentei primeiro uma linha box-shadow separada na regra de
+     cada botão e virou código morto — o box-shadow próprio do componente
+     vem depois e vence. */
+  --btn-primary-glow:       var(--elev-1), var(--btn-metal-aresta);
+  --btn-primary-glow-hover: var(--elev-2), var(--btn-metal-aresta);
+  --mp-btn-glow:            var(--elev-1), var(--btn-metal-aresta);
+  --mp-btn-glow-hover:      var(--elev-2), var(--btn-metal-aresta);
+  --hiw-nbtn-glow-hover:    var(--elev-1);
+
+  --tg-ink: #1B6E9C;
+  --tg-rgb: 27, 110, 156;
+
+  --chevron-select: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='rgba(26,25,23,0.6)' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+
+  /* ADENDO — orbs de volta no claro, com técnica própria (substitui a
+     tentativa original desta fase, que desligava tudo: alpha 0 zerava o
+     banding zerando também a atmosfera).
+
+     Por que a radial antiga banda sobre papel e não sobre carvão: uma
+     parada única (cor 0% → transparent NN%) é reta — perde alpha na
+     mesma taxa em todo o raio. Num sensor de 8 bits, cada 1/255 de
+     alpha vira um degrau de cor; sobre #0C0C0B o degrau cai dentro do
+     próprio ruído do preto e some. Sobre #FAF9F7 não há ruído
+     escondendo nada, e a reta original tem trechos rasos o bastante
+     para revelar o anel. A curva abaixo DESACELERA em vez de cair
+     reto — cada trecho perde uma fração do que perdeu o anterior — e
+     não sobra segmento raso o bastante pro degrau aparecer sozinho.
+     Uma forma só, reaproveitada em toda orb do claro.
+
+     Calibrei com a cena real (não um swatch isolado): comecei nos
+     valores documentados como alvo (picos .10/.07/.05) e nas cores
+     antigas; sobre o bege quente das páginas o dourado puro lia
+     amarelo-sujo. Puxei o matiz pra 34° (mais laranja que os 39° da
+     marca) e a saturação ficou cheia (mínimo do canal em 4, não 0,
+     mas perto) — aí passou a ler luz, não mancha. */
+  /* Fase C (Royal): mesma lição da Fase 3 pt.2 (app) — luminância bruta
+     não é critério, R−B é. Recolorido de 216,124,4 pra 236,178,62 (o
+     mesmo ouro que já funcionou no shell) e cada orb pública ganhou um
+     miolo brilhante (--orb-curva-nucleo, 255,204,0) empilhado por cima
+     do halo largo — sem ele lia só como mancha escurecendo o papel,
+     igual o app antes da correção. */
+  --orb-rgb: 236, 178, 62;
+  --a-orb-1: .10;
+  --a-orb-2: .07;
+  --a-orb-3: .05;
+
+  /* DISTRIBUIÇÃO DAS PARADAS — o que separa "luz" de "disco".
+     A curva antiga segurava o alpha alto no miolo (a 32% do raio ainda
+     tinha 62% do pico) e despencava no fim: isso é um disco chapado com
+     borda, e nenhum blur conserta — blur sobre radial foi o que causou
+     o banding antes. A curva nova cai RÁPIDO nos primeiros 30% (a 32%
+     do raio já está em 23% do pico) e arrasta uma cauda longa e quase
+     invisível até 100%. Some com o contorno sem perder o calor.
+     Fração do pico, igual em todas as curvas de orb:
+       0%=1 · 8%=.72 · 16%=.50 · 24%=.34 · 32%=.23 · 42%=.145
+       55%=.085 · 70%=.045 · 85%=.018 · 100%=0
+     Junto disso o raio cresceu e o pico caiu: raio grande + alpha baixo
+     lê como ambiente; raio pequeno + alpha alto lê como objeto. */
+  --orb-curva-nucleo:
+    rgba(255,204,0,0.2) 0%, rgba(255,204,0,0.1974) 5%, rgba(255,204,0,0.1897) 10%,
+    rgba(255,204,0,0.1776) 15%, rgba(255,204,0,0.162) 20%, rgba(255,204,0,0.1438) 25%,
+    rgba(255,204,0,0.1244) 30%, rgba(255,204,0,0.1048) 35%, rgba(255,204,0,0.0859) 40%,
+    rgba(255,204,0,0.0685) 45%, rgba(255,204,0,0.0532) 50%, rgba(255,204,0,0.0401) 55%,
+    rgba(255,204,0,0.0294) 60%, rgba(255,204,0,0.0209) 65%, rgba(255,204,0,0.0144) 70%,
+    rgba(255,204,0,0.0095) 75%, rgba(255,204,0,0.006) 80%, rgba(255,204,0,0.0035) 85%,
+    rgba(255,204,0,0.0018) 90%, rgba(255,204,0,0.0007) 95%, rgba(255,204,0,0) 100%;
+  --orb-curva-1:
+    rgba(255,204,0,0.22) 0%, rgba(253,201,8,0.2171) 5%, rgba(250,198,16,0.2087) 10%,
+    rgba(248,194,23,0.1954) 15%, rgba(246,191,31,0.1782) 20%, rgba(243,188,39,0.1582) 25%,
+    rgba(241,185,46,0.1368) 30%, rgba(238,181,54,0.1152) 35%, rgba(236,178,62,0.0945) 40%,
+    rgba(236,178,62,0.0754) 45%, rgba(236,178,62,0.0585) 50%, rgba(236,178,62,0.0442) 55%,
+    rgba(236,178,62,0.0324) 60%, rgba(236,178,62,0.023) 65%, rgba(236,178,62,0.0158) 70%,
+    rgba(236,178,62,0.0104) 75%, rgba(236,178,62,0.0066) 80%, rgba(236,178,62,0.0038) 85%,
+    rgba(236,178,62,0.002) 90%, rgba(236,178,62,0.0008) 95%, rgba(236,178,62,0) 100%;
+  --orb-curva-2:
+    rgba(255,204,0,0.165) 0%, rgba(253,201,8,0.1628) 5%, rgba(250,198,16,0.1565) 10%,
+    rgba(248,194,23,0.1466) 15%, rgba(246,191,31,0.1336) 20%, rgba(243,188,39,0.1187) 25%,
+    rgba(241,185,46,0.1026) 30%, rgba(238,181,54,0.0864) 35%, rgba(236,178,62,0.0708) 40%,
+    rgba(236,178,62,0.0565) 45%, rgba(236,178,62,0.0439) 50%, rgba(236,178,62,0.0331) 55%,
+    rgba(236,178,62,0.0243) 60%, rgba(236,178,62,0.0172) 65%, rgba(236,178,62,0.0118) 70%,
+    rgba(236,178,62,0.0078) 75%, rgba(236,178,62,0.0049) 80%, rgba(236,178,62,0.0029) 85%,
+    rgba(236,178,62,0.0015) 90%, rgba(236,178,62,0.0006) 95%, rgba(236,178,62,0) 100%;
+  --orb-curva-3:
+    rgba(255,204,0,0.125) 0%, rgba(253,201,8,0.1234) 5%, rgba(250,198,16,0.1186) 10%,
+    rgba(248,194,23,0.111) 15%, rgba(246,191,31,0.1012) 20%, rgba(243,188,39,0.0899) 25%,
+    rgba(241,185,46,0.0777) 30%, rgba(238,181,54,0.0655) 35%, rgba(236,178,62,0.0537) 40%,
+    rgba(236,178,62,0.0428) 45%, rgba(236,178,62,0.0332) 50%, rgba(236,178,62,0.0251) 55%,
+    rgba(236,178,62,0.0184) 60%, rgba(236,178,62,0.0131) 65%, rgba(236,178,62,0.009) 70%,
+    rgba(236,178,62,0.0059) 75%, rgba(236,178,62,0.0037) 80%, rgba(236,178,62,0.0022) 85%,
+    rgba(236,178,62,0.0011) 90%, rgba(236,178,62,0.0004) 95%, rgba(236,178,62,0) 100%;
+
+  /* .app-bg-layer (shell do app logado) tem receita própria, separada
+     de --orb-curva-1/2/3 (essas seguem servindo --orb-bg-a/b/c, usadas
+     pelas orbs da landing). Segunda rodada (medição real): luminância
+     bruta não é o critério — nenhum ouro saturado clareia este papel,
+     nem 228,156,0 (~176) nem 255,204,0 (~198) batem os ~242 do papel.
+     O que lê como luz é R−B alto no centro caindo pra R−B baixo (~11,
+     o do papel puro) nas bordas — vinheta+orbs escurecendo tudo do
+     mesmo jeito lia como poço, não como foco. Por isso o miolo quente
+     (--orb-bg-core) vive no PRÓPRIO .app-bg-layer, que é fixed+inset:0
+     (= viewport exato), em vez de dentro de ::before/::after — essas
+     duas são boxes deslocadas (drift), e um centro ali não fica no
+     centro da tela. --orb-rgb-shell subiu de 228,156,0 pra 236,178,62:
+     mesmo ouro, B mais alto, R−B mais baixo (mancha lê calor, não
+     sujeira). */
+  --orb-rgb-bright: 255, 204, 0;
+  --orb-curva-shell-a:
+    rgba(236,178,62,.19) 0%, rgba(236,178,62,.165) 12%, rgba(236,178,62,.135) 24%,
+    rgba(236,178,62,.105) 36%, rgba(236,178,62,.078) 48%, rgba(236,178,62,.054) 60%,
+    rgba(236,178,62,.034) 72%, rgba(236,178,62,.017) 84%, rgba(236,178,62,0) 100%;
+  --orb-curva-shell-b1:
+    rgba(236,178,62,.145) 0%, rgba(236,178,62,.125) 13%, rgba(236,178,62,.102) 26%,
+    rgba(236,178,62,.079) 39%, rgba(236,178,62,.058) 52%, rgba(236,178,62,.039) 65%,
+    rgba(236,178,62,.023) 78%, rgba(236,178,62,.01) 90%, rgba(236,178,62,0) 100%;
+  /* Mesma redistribuição das orbs (queda rápida + cauda longa). O PICO
+     fica em .14: é ele que sustenta o R−B ~40 no centro da tela, e
+     suavizar não pode custar o calor. */
+  --orb-curva-core:
+    rgba(255,204,0,0.14) 0%, rgba(255,204,0,0.1382) 5%, rgba(255,204,0,0.1328) 10%,
+    rgba(255,204,0,0.1243) 15%, rgba(255,204,0,0.1134) 20%, rgba(255,204,0,0.1007) 25%,
+    rgba(255,204,0,0.0871) 30%, rgba(255,204,0,0.0733) 35%, rgba(255,204,0,0.0601) 40%,
+    rgba(255,204,0,0.048) 45%, rgba(255,204,0,0.0372) 50%, rgba(255,204,0,0.0281) 55%,
+    rgba(255,204,0,0.0206) 60%, rgba(255,204,0,0.0146) 65%, rgba(255,204,0,0.0101) 70%,
+    rgba(255,204,0,0.0066) 75%, rgba(255,204,0,0.0042) 80%, rgba(255,204,0,0.0024) 85%,
+    rgba(255,204,0,0.0013) 90%, rgba(255,204,0,0.0005) 95%, rgba(255,204,0,0) 100%;
+  /* As públicas ganham calor extra das tres orbs grandes; o app nao
+     tem isso, entao o miolo de la precisa ser mais forte. Mesma forma,
+     picos diferentes: .14 no app, .10 nas publicas. */
+  --orb-curva-core-pub:
+    rgba(255,204,0,0.1) 0%, rgba(255,204,0,0.0987) 5%, rgba(255,204,0,0.0949) 10%,
+    rgba(255,204,0,0.0888) 15%, rgba(255,204,0,0.081) 20%, rgba(255,204,0,0.0719) 25%,
+    rgba(255,204,0,0.0622) 30%, rgba(255,204,0,0.0524) 35%, rgba(255,204,0,0.0429) 40%,
+    rgba(255,204,0,0.0343) 45%, rgba(255,204,0,0.0266) 50%, rgba(255,204,0,0.0201) 55%,
+    rgba(255,204,0,0.0147) 60%, rgba(255,204,0,0.0105) 65%, rgba(255,204,0,0.0072) 70%,
+    rgba(255,204,0,0.0047) 75%, rgba(255,204,0,0.003) 80%, rgba(255,204,0,0.0017) 85%,
+    rgba(255,204,0,0.0009) 90%, rgba(255,204,0,0.0004) 95%, rgba(255,204,0,0) 100%;
+
+  /* Boxes menos deslocadas que no escuro: com -14%/-12%/-16%/-12% (os
+     valores que o escuro usa, via fallback em app-shell.css) o pico
+     do gradiente interno (76% 12%/12% 82% da própria box) caía fora
+     do viewport (y≈-40px pro ::before). Medido e corrigido — ver
+     diario-light.md, Fase 3 pt.2. */
+  --orb-shell-a-top: -6%; --orb-shell-a-right: -4%;
+  --orb-shell-b-bottom: -6%; --orb-shell-b-left: -4%;
+
+  /* ::before em px, não %: medido ao vivo (getComputedStyle) que o pico
+     (76% 12% da box) cai a só ~161px da borda real do viewport — bem
+     menos que os 528px que "60%" de raio dava, cortando a curva em
+     ~alpha .13 em vez de zero (aresta dura, R7). Raio em px fica fixo
+     e não escala com a box, então dá pra escolher um valor que zera
+     antes do corte. ::after não tem o mesmo problema: o lado que
+     estoura (esquerda) fica atrás da sidebar opaca (0–220px), fora de
+     vista — medido, não presumido. */
+  --orb-bg-shell-a: radial-gradient(145px 300px at 76% 12%, var(--orb-curva-shell-a));
+  --orb-bg-shell-b: radial-gradient(52% 48% at 12% 82%, var(--orb-curva-shell-b1));
+  /* Ancorado no viewport (o próprio .app-bg-layer), não numa box de
+     drift — é o miolo quente que falta pra ler como foco de luz, não
+     vinheta ao contrário. Raio puxado de 48%/46% pra 44%/42%: no pico
+     original a borda batia quase exatamente em alpha 0 (folga
+     mínima) — puxado pra dar margem de verdade. */
+  --orb-bg-core: radial-gradient(44% 42% at 50% 46%, var(--orb-curva-core));
+  /* X.2: a atmosfera das públicas é UMA camada contínua, não uma por
+     seção — #bg-orbs já é fixed+inset:0 (viewport exato), então o miolo
+     mora nele e acompanha a rolagem sem emenda nenhuma. Ancorado um
+     pouco mais alto que o do app (40% contra 46%): nas públicas o
+     conteúdo que importa é o hero, não o centro geométrico. */
+  --orb-bg-core-pub: radial-gradient(42% 40% at 50% 38%, var(--orb-curva-core-pub));
+  /* Raio em px, não em círculo "farthest-corner" implícito (A.1): o
+     antigo `radial-gradient(circle, …)` sem size mapeava a curva pro
+     canto do box quadrado (~1,41× o raio do círculo real, já que o
+     círculo nasce de border-radius:50% sobre um box quadrado) — a
+     curva ainda tinha ~metade do pico quando o círculo cortava,
+     mesmo problema do A.1 só que com corte circular em vez de reto.
+     Raio explícito = metade da largura do box (a curva zera em 100%,
+     exatamente na borda do círculo, e como a cauda longa chega lá já
+     perto de zero não há degrau). Boxes crescem junto: aumentar o raio
+     sem aumentar a box só faria o círculo cortar a curva de novo. */
+  --orb-a-size: 1100px;
+  --orb-bg-a: radial-gradient(circle 550px at center, var(--orb-curva-1));
+  --orb-b-size: 1000px; --orb-b-bottom: -18%; --orb-b-left: -12%;
+  --orb-bg-b: radial-gradient(circle 500px at center, var(--orb-curva-2));
+  --orb-c-size: 620px;
+  --orb-bg-c: radial-gradient(circle 310px at center, var(--orb-curva-3));
+
+  /* Onboarding é a que mais bandava (blur 140/175, tela de foco único
+     sem outra orb competindo por atenção). R da Fase 4 original libera
+     geometria própria aqui: blur menor (110/130) trabalha melhor com a
+     curva escalonada que um blur gigante, e o pico sobe um pouco
+     (.12/.08) pra compensar o alcance menor. */
+  --orb-curva-onb-a:
+    rgba(255,204,0,0.2) 0%, rgba(253,201,8,0.1974) 5%, rgba(250,198,16,0.1897) 10%,
+    rgba(248,194,23,0.1776) 15%, rgba(246,191,31,0.162) 20%, rgba(243,188,39,0.1438) 25%,
+    rgba(241,185,46,0.1244) 30%, rgba(238,181,54,0.1048) 35%, rgba(236,178,62,0.0859) 40%,
+    rgba(236,178,62,0.0685) 45%, rgba(236,178,62,0.0532) 50%, rgba(236,178,62,0.0401) 55%,
+    rgba(236,178,62,0.0294) 60%, rgba(236,178,62,0.0209) 65%, rgba(236,178,62,0.0144) 70%,
+    rgba(236,178,62,0.0095) 75%, rgba(236,178,62,0.006) 80%, rgba(236,178,62,0.0035) 85%,
+    rgba(236,178,62,0.0018) 90%, rgba(236,178,62,0.0007) 95%, rgba(236,178,62,0) 100%;
+  --orb-curva-onb-b:
+    rgba(255,204,0,0.145) 0%, rgba(253,201,8,0.1431) 5%, rgba(250,198,16,0.1376) 10%,
+    rgba(248,194,23,0.1288) 15%, rgba(246,191,31,0.1174) 20%, rgba(243,188,39,0.1043) 25%,
+    rgba(241,185,46,0.0902) 30%, rgba(238,181,54,0.0759) 35%, rgba(236,178,62,0.0623) 40%,
+    rgba(236,178,62,0.0497) 45%, rgba(236,178,62,0.0386) 50%, rgba(236,178,62,0.0291) 55%,
+    rgba(236,178,62,0.0213) 60%, rgba(236,178,62,0.0152) 65%, rgba(236,178,62,0.0104) 70%,
+    rgba(236,178,62,0.0069) 75%, rgba(236,178,62,0.0043) 80%, rgba(236,178,62,0.0025) 85%,
+    rgba(236,178,62,0.0013) 90%, rgba(236,178,62,0.0005) 95%, rgba(236,178,62,0) 100%;
+  --orb-bg-onb-a: radial-gradient(circle 320px at center, var(--orb-curva-onb-a));
+  --orb-bg-onb-b: radial-gradient(circle 350px at center, var(--orb-curva-onb-b));
+  /* Coluna central estreita: offset menor que o herdado do escuro
+     (-10%/-12%/-22%/-14%) pra não empurrar o miolo pra fora — mesmo
+     ajuste do app (Fase 3 pt.2), calibrado pra essa composição
+     específica (coluna de 480px, sem sidebar pra roubar metade da
+     tela como no app). */
+  --orb-onb-a-top: -4%; --orb-onb-a-right: -4%;
+  --orb-onb-b-bottom: -8%; --orb-onb-b-left: -4%;
+  --orb-bg-core-onb: radial-gradient(38% 42% at 50% 44%, var(--orb-curva-core));
+  /* O banding não vinha da curva — vinha do FILTER: BLUR(). Testei lado
+     a lado (scratchpad/blur-teste.png): a mesma curva em blur 0 já é
+     lisa; a partir de blur 40 os anéis aparecem e crescem com o raio
+     do blur. A implementação de blur do Chromium roda em passes de
+     precisão limitada — é ela que introduz o degrau de 8 bits, não a
+     quantidade de paradas do gradiente. Solução: a suavidade vem só da
+     curva (7 paradas já fazem o trabalho), sem passe de blur no claro. */
+  --ob-orb-blur-a: 0px;
+  --ob-orb-blur-b: 0px;
+  --orb-blur-shell-a: 0px;
+  --orb-blur-shell-b: 0px;
+  --orb-blur: 0px;
+
+  /* Vinheta: escurece as quinas pra dar profundidade ao papel — sem
+     ela o claro lia chapado, uma cor só de ponta a ponta. Tinta
+     (42,34,18, o mesmo canal de --line-rgb) em vez de preto puro,
+     pra escurecer sem esfriar. Entra via --bg/--app-bg (camada 4),
+     então cobre marketing e app logado sem tocar componente nenhum. */
+  --vignette-bg:
+    radial-gradient(130% 110% at 68% 22%,
+      rgba(42,34,18,0) 38%, rgba(42,34,18,.011) 58%,
+      rgba(42,34,18,.024) 76%, rgba(42,34,18,.039) 90%,
+      rgba(42,34,18,.05) 100%);
+
+  /* Grão CSS puro (R6): feTurbulence renderiza página em branco no
+     ambiente de validação — trocado por pontos radiais empilhados em
+     tamanhos primos entre si, que não repetem visivelmente. Canal
+     --ink-rgb, sem literal novo. */
+  --grain-bg:
+    radial-gradient(circle at 15% 25%, rgba(var(--ink-rgb),1) .4px, transparent .4px),
+    radial-gradient(circle at 55% 65%, rgba(var(--ink-rgb),1) .4px, transparent .4px),
+    radial-gradient(circle at 80% 10%, rgba(var(--ink-rgb),1) .4px, transparent .4px),
+    radial-gradient(circle at 30% 85%, rgba(var(--ink-rgb),1) .4px, transparent .4px),
+    radial-gradient(circle at 90% 45%, rgba(var(--ink-rgb),1) .4px, transparent .4px);
+  --grain-size: 7px 7px, 11px 9px, 5px 13px, 9px 5px, 13px 11px;
+  --grain-opacity: .03;
+
+  /* X.2: o DEGRAU de superfície que existia aqui (#F5F4F1 na seção
+     inteira) era justamente a emenda horizontal — fundo opaco de
+     seção cortando a atmosfera contínua que passa por trás. Volta a
+     ser transparente, e o glow da seção volta pelas orbs próprias,
+     agora com a receita nova (miolo + halo, ver --orb-curva-nucleo).
+     Herança do escuro: lá o fundo é uniforme e ninguém via a emenda. */
+  --hiw-orb-1:    rgba(236,178,62,.13);
+  --hiw-orb-2:    rgba(255,204,0,.10);
+  --hiw-secao-bg: transparent;
+  /* Agentes: a orb gigante de cada seção apaga e vira wash linear do
+     topo, no acento da própria seção, a 6% e sem blur — preserva a
+     diferença entre Voithos/Argos/Plutos sem banding. */
+  /* X.2 + Fase C: o wash linear no fundo de cada .ag-section era
+     exatamente a emenda horizontal — três seções seguidas, cada uma
+     abrindo com 6% de acento no topo, dão um degrau de tom em cada
+     junção. A identidade de cor por seção volta pra .ag-orb (que é
+     radial e morre em transparente antes da borda, sem emenda
+     possível), agora com curva multi-parada e sem blur. */
+  --ag-orb-k:     .8;
+  --ag-wash:      0%;
+  --ag-orb-blur:  0px;
+  /* Mesma redistribuição das outras orbs, em fração do acento da seção. */
+  --ag-orb-bg: radial-gradient(circle closest-side at center,
+    var(--ag-accent) 0%,
+    color-mix(in srgb, var(--ag-accent) 88%, transparent) 10%,
+    color-mix(in srgb, var(--ag-accent) 72%, transparent) 20%,
+    color-mix(in srgb, var(--ag-accent) 55%, transparent) 30%,
+    color-mix(in srgb, var(--ag-accent) 40%, transparent) 40%,
+    color-mix(in srgb, var(--ag-accent) 27%, transparent) 50%,
+    color-mix(in srgb, var(--ag-accent) 17%, transparent) 60%,
+    color-mix(in srgb, var(--ag-accent) 10%, transparent) 70%,
+    color-mix(in srgb, var(--ag-accent)  5%, transparent) 80%,
+    color-mix(in srgb, var(--ag-accent)  2%, transparent) 90%,
+    transparent 100%);
+
+  /* No claro o Ω não tem como somar luz — o papel já é o máximo dela.
+     Ganha CORPO: metal sólido (gradiente, não alpha), contorno em tinta
+     de marca MAIS ESCURO que o corpo em qualquer ponto do gradiente, e
+     a varredura CLAREIA em vez de escurecer (A.3 — nota antiga aqui
+     dizia o oposto e ficou desatualizada: medido que pico escuro sobre
+     base já escura cai abaixo da luminância do corpo e lê como mancha).
+     Sem glow: luz aditiva sobre branco vira névoa.
+
+     B.2 (Royal): os 4 estados eram 4 sólidos por alpha (regime do
+     escuro, que soma luz sobre preto). Com gradiente isso viraria 4
+     gradientes escritos à mão — em vez disso, UM gradiente
+     (--marca-metal) reutilizado nos 4, e a progressão de intensidade
+     vem de filter: brightness()/saturate() por estado (--marca-filtro-*,
+     aplicado em .voithos-mark via --estado-filtro, marca-voithos.css).
+     Escuro nem olha pra --marca-metal — continua com os 4 sólidos de
+     alpha originais, intocado. */
+  --marca-metal: linear-gradient(148deg,
+    #F6BE33 0%, #E9A50B 30%, #C9820A 58%, #B87403 74%, #E0A422 100%);
+  --marca-base:             var(--marca-metal);
+  --marca-base-escuta:      var(--marca-metal);
+  --marca-base-pensando:    var(--marca-metal);
+  --marca-base-pago:        var(--marca-metal);
+  --marca-filtro-escuta:    brightness(1.08) saturate(1.15);
+  --marca-filtro-pensando:  brightness(1.16) saturate(1.3);
+  --marca-filtro-pago:      brightness(1.04) saturate(1.05);
+  /* A.3 (Royal): a varredura escura original (rgba(107,68,0,…)) somada
+     à base já escura (#D69100/#CF8C00) cai ABAIXO da luminância do
+     próprio corpo — em ~40° do giro (quando o cone cruza o traço) lê
+     como mancha/sombra, não reflexo. Medido com 3 frames congelados
+     (0°/120°/240°): só o primeiro tinha o problema, mas ele se repete
+     em todo ciclo. Trocado por reflexo CLARO (pico sempre mais
+     luminoso que a base, medido): pico L≈199 e cauda L≈165 contra
+     base L≈149 (repouso) — nunca mais escuro que o corpo, em nenhum
+     ponto do giro. */
+  --marca-pico:             rgba(255,232,168,.6);
+  --marca-pico-pensando:    rgba(255,238,184,.72);
+  --marca-cauda:            rgba(255,220,140,.22);
+  --marca-contorno:         #9A6000;   /* 4,93:1 */
+  --marca-contorno-aceso:   #8A5600;   /* 5,85:1 */
+  --marca-contorno-largura: 1;
+  --marca-brilho: drop-shadow(0 1px 1px rgba(107,68,0,.25));
+  --marca-halo:   drop-shadow(0 1px 1px rgba(26,25,23,.10)) drop-shadow(0 4px 12px rgba(26,25,23,.10));
+
+  /* Vidro no claro: como o Ω, nada de luz aditiva (vira névoa sobre o
+     papel). A barra mantém a superfície de painel e só ganha a aresta
+     de metal; o botão é o metal do Ω com o contorno escuro dele. */
+  --vidro-barra-bg:      var(--surface-panel);
+  --vidro-barra-borda:   linear-gradient(135deg, rgba(201,130,10,.55) 0%, rgba(168,104,0,.20) 45%, rgba(168,104,0,.14) 70%, rgba(201,130,10,.45) 100%);
+  --vidro-barra-borda-foco: linear-gradient(135deg, #C9820A 0%, rgba(168,104,0,.55) 45%, rgba(168,104,0,.40) 70%, #B87403 100%);
+  --vidro-barra-sombra:  var(--card-shadow-hover);
+  --vidro-barra-sombra-foco: var(--card-shadow-hover), 0 0 0 3px rgba(168,104,0,.10);
+  --vidro-blur:          none;
+  --vidro-botao-bg:      var(--marca-metal);
+  --vidro-botao-bg-hover: var(--marca-metal);
+  --vidro-botao-sombra:  inset 0 0 0 1px #9A6000, inset 0 1px 1px rgba(255,246,222,.6), 0 1px 3px rgba(107,68,0,.25);
+  --vidro-botao-sombra-hover: inset 0 0 0 1px #8A5600, inset 0 1px 1px rgba(255,246,222,.7), 0 2px 8px rgba(107,68,0,.3);
+  --vidro-botao-tinta:   var(--on-brand);
+
+  --sidebar-bg: #F1EDE3;   /* ROYAL */
+  --sidebar-drawer-bg: var(--sidebar-bg);
+  /* --elev-2 com o eixo girado: a sidebar é presa à esquerda, então
+     a sombra projeta para a direita, sobre o conteúdo. */
+  /* --sidebar-shadow (ROYAL 2.3 lote D) fica definida na camada de
+     EFEITOS mais abaixo, junto com --luz-aresta — evita duas fontes
+     da mesma variável no mesmo bloco de tema. */
+
+  /* Sem orbs o palco some e a tela vira folha em branco com carimbo.
+     O campo ganha superfície de painel (a elevação vem de
+     --card-shadow-hover, elev-2) e o grupo sobe: +10vh de respiro
+     embaixo desloca o centro ~5vh para cima, para o centro óptico. */
+  --field-surface:   var(--surface-panel);
+  --welcome-desvio:  10vh;
+  /* Onboarding é tela de foco: o equivalente claro de "mais escuro" é
+     "mais contido". O passo vira painel (+ elev-2) e o trilho de
+     progresso deixa de ser um risco cinza solto na borda: vira canal
+     da mesma superfície, elevado. */
+  --ob-painel:       var(--surface-panel);
+  --ob-painel-pad:   36px 32px;
+  --ob-largura:      544px;
+  --ob-trilho:       var(--surface-panel);
+
+  /* Meia opacidade sobre papel lê como campo QUEBRADO (borda, fundo e
+     texto desbotados juntos). Bloqueado de verdade: opacidade cheia,
+     texto terciário (6,2:1), borda tracejada e cadeado. O cadeado é
+     data-URI, que não enxerga var() — a cor fica cravada aqui. */
+  --locked-opacity:      1;
+  --locked-ink:          var(--ink-3);
+  --locked-border-style: dashed;
+  --locked-icon: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%236D6C6A' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='5' y='11' width='14' height='10' rx='2'/%3E%3Cpath d='M8 11V8a4 4 0 0 1 8 0v3'/%3E%3C/svg%3E");
+  --locked-pad-right:    36px;
+}
+
+
+/* ════════════════════════════════════════════════════════════
+   EFEITOS — elevação, glow, glass
+
+   No escuro, profundidade = superfície MAIS CLARA (a luz vem de
+   dentro). No claro, profundidade = sombra REAL projetada + um
+   specular branco no topo. São mecanismos diferentes ocupando o
+   mesmo papel; por isso viram token em vez de literal.
+════════════════════════════════════════════════════════════ */
+:root {
+  --elev-1: 0 1px 2px rgba(0,0,0,.40);
+  --elev-2: 0 8px 24px rgba(0,0,0,.50);
+  --elev-3: 0 24px 64px rgba(0,0,0,.65);
+  --elev-4: 0 40px 100px rgba(0,0,0,.75);
+
+  --elev-1-bg: var(--surface-3);
+  --elev-2-bg: var(--surface-panel);
+
+  /* O card do app. No escuro é a superfície do painel DILUÍDA no
+     fundo — a luz vem de dentro, e sombra sobre preto não faria
+     nada. No claro isso não funciona: branco a 16% sobre
+     #FAF9F7 é invisível. Lá o card vira branco sólido e a
+     separação passa a vir da SOMBRA. Dois mecanismos, um token. */
+  --surface-card: color-mix(in srgb, var(--surface-panel) 16%, transparent);
+  --card-shadow:  none;
+  --surface-card-hover: color-mix(in srgb, var(--surface-panel) 22%, transparent);
+  --card-shadow-hover:  none;
+
+  /* Sombras de componente que o escuro não deixa colapsar em --elev-*:
+     trocar a geometria delas seria visível no escuro. :root guarda o
+     valor exato que já existia no componente; o claro usa a escala. */
+  --drawer-shadow:    -28px 0 80px rgba(0,0,0,.60);
+  --deco-card-shadow: 0 16px 48px rgba(0,0,0,.45);
+  --nav-shadow:       0 8px 40px rgba(0,0,0,.55);
+
+  /* ROYAL 2.2 — "aresta de luz": a linha de 1px mais clara que uma
+     superfície elevada pega no topo, em UI clara. Existia como
+     rgba(255,255,255,var(--a-spec)) e era invisível no claro (branco
+     sobre quase-branco); renomeado e com valor próprio no bloco claro
+     (abaixo) — não deriva mais de --a-spec ali. Escuro: mesma fórmula
+     de antes, byte a byte (--a-spec continua .06 no escuro). */
+  --luz-aresta: inset 0 1px 0 rgba(255,255,255,var(--a-spec));
+  --spec-hairline: var(--luz-aresta);   /* alias — nomes antigos continuam válidos */
+
+  --glow-brand-sm: 0 0 14px rgba(var(--brand-tint-rgb), .30);
+  --glow-brand-md: 0 0 22px rgba(var(--brand-tint-rgb), .22);
+  --glow-brand-lg: 0 0 60px rgba(var(--brand-tint-rgb), .22),
+                   0 0 120px rgba(var(--brand-tint-rgb), .08);
+
+  --glass-bg:     rgba(12, 12, 11, .55);
+  --glass-filter: blur(36px) saturate(180%) brightness(0.85);
+
+  /* Cor e FORÇA da sombra projetada.
+     As 32 box-shadow que já existiam não foram colapsadas nos
+     quatro --elev-* de propósito: várias são direcionais
+     (-28px 0 80px na gaveta lateral) e achatá-las mudaria o
+     escuro, que precisava sair desta refatoração intacto. Em
+     vez disso, cada sombra passou a ler o canal e a multiplicar
+     o próprio alpha por --shadow-k. No escuro k=1 (nada muda);
+     no claro k=.22 deixa a MESMA geometria com a força certa
+     para papel, sem reescrever 32 declarações à mão.
+     --elev-1..4 continuam disponíveis para código novo. */
+  --shadow-rgb: 0, 0, 0;
+  --shadow-k:   1;
+}
+
+html.light-mode {
+  /* ROYAL Fase 2.1 — direção de luz coerente: a luz vem do canto
+     superior direito (onde mora a orb principal), sombra de corpo
+     iluminado da direita cai pra baixo-esquerda, offset X negativo.
+     Duas camadas em todo nível: CONTATO curto e mais opaco (o objeto
+     encosta na página) + DIFUSA longa e fraca (a altura). */
+  --elev-1: -1px 2px 3px rgba(42,34,18,.055), -2px 6px 14px rgba(42,34,18,.075);
+  --elev-2: -1px 2px 4px rgba(42,34,18,.06),  -4px 14px 36px rgba(42,34,18,.115);
+  --elev-3: -2px 4px 8px rgba(42,34,18,.07),  -8px 28px 64px rgba(42,34,18,.145);
+  --elev-4: -3px 6px 12px rgba(42,34,18,.08), -14px 48px 96px rgba(42,34,18,.18);
+
+  /* ROYAL 2.2 — aresta de luz: valor próprio no claro, não deriva mais
+     de --a-spec (aquele .85 branco puro era desenhado pro papel
+     antigo). Ivory quente, quase opaco. */
+  --luz-aresta: inset 0 1px 0 rgba(255,253,246,.92);
+
+  --elev-1-bg: #FBF9F4;   /* ROYAL, acompanha --surface-panel */
+  --elev-2-bg: #FBF9F4;
+
+  /* Mesmo resultado visual do --card-rgb translúcido, em forma
+     opaca — para o card do app não destoar dos cards do site. */
+  --surface-card: #F1EDE3;   /* ROYAL */
+  /* ROYAL 2.2/2.3 — --luz-aresta embutida DIRETO no valor claro destes
+     tokens (não no componente): assim todo consumidor ganha a aresta
+     de graça, e o escuro (que continua "none"/sem hairline aqui) nunca
+     corre risco de misturar "none" com uma camada extra — sintaxe
+     inválida em box-shadow. */
+  --card-shadow:  var(--elev-1), var(--luz-aresta);
+  --surface-card-hover: #ECE8DD;   /* ROYAL, mesma queda de L* (1,78) que tinha do card antigo */
+  --card-shadow-hover:  var(--elev-2), var(--luz-aresta);
+
+  --drawer-shadow:    var(--elev-4), var(--luz-aresta);
+  --deco-card-shadow: var(--elev-3);
+  --nav-shadow:       var(--elev-3);
+  --sidebar-shadow:   4px 0 26px rgba(42,34,18,.06), var(--luz-aresta);
+
+  /* Glow neon não tem tradução honesta para o claro: luz aditiva
+     sobre branco é fisicamente sem sentido. O substituto é uma
+     sombra quente projetada mais um anel de tinta da marca —
+     efeito diferente, mesmo papel na hierarquia. */
+  --glow-brand-sm: 0 2px 8px rgba(var(--brand-tint-rgb), .22), var(--btn-metal-aresta);
+  --glow-brand-md: 0 6px 18px rgba(var(--brand-tint-rgb), .24),
+                   0 0 0 1px rgba(var(--brand-tint-rgb), .14);
+  --glow-brand-lg: 0 14px 40px rgba(var(--brand-tint-rgb), .26),
+                   0 2px 8px rgba(var(--brand-tint-rgb), .14);
+
+  /* brightness(0.85) é exatamente o que transformava a navbar
+     clara em lama cinza — por isso passa por token. */
+  /* A pill precisa ler como um objeto sobre a página, não como
+     um recorte dela: mais opaca, levemente tintada, e SEM o
+     brightness que a devolvia à cor do papel. */
+  --glass-bg:     rgba(238, 235, 229, .86);   /* recalibrado ROYAL: mesma
+                                                  distância de L* do papel
+                                                  novo que tinha do antigo */
+  --glass-filter: blur(36px) saturate(150%);
+
+  /* Sombra quente e MUITO mais fraca: um rgba(0,0,0,.6) que lê
+     como profundidade sobre #0C0C0B vira um borrão sujo sobre
+     papel. */
+  --shadow-rgb: 26, 25, 23;
+  --shadow-k:   .22;
+}
+
+
+/* ════════════════════════════════════════════════════════════
+   CAMADA 4 — ALIASES LEGADOS
+
+   Todo nome que o código já usa, remapeado sobre a camada 3.
+   Existe para que a migração seja incremental: um arquivo pode
+   ser convertido para os nomes semânticos sem que os outros 12
+   quebrem no mesmo commit.
+
+   Não use estes nomes em código novo.
+════════════════════════════════════════════════════════════ */
+:root {
+  /* marketing (era style.css:22-50) */
+  /* A vinheta NÃO entra aqui (X.2): o body das públicas tem a altura do
+     DOCUMENTO (5.816px na home, 10.867px na privacidade), então uma
+     vinheta no fundo do body se estica pela página inteira e o rodapé
+     cai dentro do anel escuro dela — medido como degrau sustentado de
+     ~5 de luminância. Ela mora no #bg-orbs, que é fixed (= viewport),
+     junto do miolo quente. No app o body é do tamanho da viewport
+     (overflow:hidden), então lá --app-bg segue com vinheta. */
+  --bg:          var(--surface-0);
+  --bg2:         var(--surface-1);
+  --bg3:         var(--surface-2);
+  --surface:     var(--surface-3);
+  --white:       var(--ink-strong);
+  --text:        var(--ink);
+  --muted:       var(--ink-3);
+  --muted2:      var(--ink-4);
+  --border:      var(--line);
+  --border-gold: rgba(var(--brand-tint-rgb), .28);
+  --gold:        var(--brand);
+  --gold-light:  var(--brand-hover);
+  --gold-glow:   rgba(var(--brand-tint-rgb), .18);
+  --green:       var(--ok);
+  --red:         var(--danger);
+
+  /* app logado (era app-shell.css:12-34) */
+  --app-bg:            var(--vignette-bg), var(--surface-0);
+  --app-surface:       var(--surface-panel);
+  --app-surface-2:     rgba(var(--veil-rgb), var(--a-veil-1));
+  --app-border:        var(--line);
+  --app-border-strong: var(--line-strong);
+  --text-primary:      var(--ink-strong);
+  --text-secondary:    var(--ink-2);
+  --text-muted:        var(--ink-3);
+  --gold-primary:      var(--brand);
+  --gold-accent:       var(--brand-bright);
+
+  /* views escopadas (argos / plutos / voithos) */
+  --border-subtle:  rgba(var(--line-rgb), var(--a-line));
+  --border-hover:   rgba(var(--line-rgb), var(--a-line-2));
+  --kerdos-entrada: var(--money-in);
+  --kerdos-saida:   var(--money-out);
+
+  /* hero v2 — --h-bg / --h-card / --h-border / --h-muted / --h-red
+     nunca tiveram um único var() lendo. Ficam como no-op de
+     segurança caso markup antigo ressuscite. */
+  --h-gold:   var(--brand);
+  --h-gold2:  var(--brand-bright);
+  --h-green:  var(--ok);
+  --h-bg:     var(--surface-1);
+  --h-card:   var(--surface-panel);
+  --h-border: var(--line);
+  --h-muted:  var(--ink-3);
+  --h-red:    var(--danger);
+}
+
+
+/* ════════════════════════════════════════════════════════════
+   TRANSIÇÃO DE TEMA
+
+   Janela curta e explícita, ativada por theme.js só no clique.
+   A alternativa preguiçosa — `* { transition: background-color }`
+   — obriga o compositor a animar a árvore inteira (home.html tem
+   1.5k linhas de markup) e degrada todo hover para sempre.
+════════════════════════════════════════════════════════════ */
+html.theme-switching,
+html.theme-switching body {
+  transition: background-color .2s linear, color .2s linear;
+}
+html.theme-switching nav,
+html.theme-switching .mp-wrap,
+html.theme-switching .app-bg-layer,
+html.theme-switching .vt-sidebar {
+  transition: background-color .2s linear, border-color .2s linear;
+}
+/* navbar.css usa 0.45s no seu próprio transition; sem este
+   override a navbar ficaria 250ms atrasada em relação à página. */
+html.theme-switching nav { transition-duration: .2s; }
+
+@media (prefers-reduced-motion: reduce) {
+  html.theme-switching * { transition: none !important; }
+}
+
+
+/* ════════════════════════════════════════════════════════════
+   MINI-TOGGLE DE TEMA (scripts/theme-toggle.js)
+
+   Mora aqui, e não num CSS de página, porque é controle de tema:
+   precisa funcionar em página que não carrega mais nada além
+   desta folha (onboarding).
+════════════════════════════════════════════════════════════ */
+.kd-theme-mini {
+  display: inline-flex;
+  gap: 2px;
+  padding: 3px;
+  border-radius: 999px;
+  background: rgba(var(--veil-rgb), var(--a-veil-2));
+  border: 1px solid var(--line);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+.kd-theme-mini .theme-opt {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: none;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--ink-3);
+  cursor: pointer;
+  transition: background-color .18s ease, color .18s ease;
+}
+.kd-theme-mini .theme-opt svg { width: 15px; height: 15px; }
+.kd-theme-mini .theme-opt:hover { color: var(--ink); }
+.kd-theme-mini .theme-opt.active {
+  background: rgba(var(--brand-tint-rgb), .16);
+  color: var(--brand-ink);
+}
+.kd-theme-mini .theme-opt:focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: 1px;
+}
+
+/* Páginas soltas (login, cadastro, senha, onboarding).
+   z-index 5 fica acima das orbs de fundo; não colide com
+   .error-popup, que é top/left:50% — eixo diferente. */
+.kd-theme-mini--float {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 5;
+}
+@media (max-width: 560px) {
+  .kd-theme-mini--float { top: 12px; right: 12px; }
+}
+
+/* App logado — rodapé da sidebar, acima do trigger de perfil. */
+.kd-theme-mini--sidebar {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  margin: 8px 0 10px;
+  background: transparent;
+  border: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+.vt-sidebar--collapsed .kd-theme-mini--sidebar { display: none; }

@@ -1,0 +1,188 @@
+/* ════════════════════════════════════════════════════════════
+   lista-espera.css — popup de inscrição no lançamento.
+
+   Prefixo le- (lista de espera). Só consome tokens de theme.css:
+   o tcc-popup.js, que veio antes, injeta cor literal no próprio
+   JS e por isso nasce quebrado no modo claro. Não copie de lá.
+
+   O markup é montado por scripts/components/lista-espera.js.
+════════════════════════════════════════════════════════════ */
+
+.le-overlay {
+  position: fixed; inset: 0;
+  z-index: 5000;
+  display: flex; align-items: center; justify-content: center;
+  padding: 20px;
+  background: rgba(var(--scrim-rgb), calc(0.56 * var(--scrim-k)));
+  backdrop-filter: blur(10px) saturate(130%);
+  -webkit-backdrop-filter: blur(10px) saturate(130%);
+  opacity: 0; visibility: hidden;
+  transition: opacity 0.28s, visibility 0.28s;
+}
+.le-overlay.is-open { opacity: 1; visibility: visible; }
+
+.le-card {
+  position: relative;
+  width: 100%; max-width: 480px;
+  max-height: calc(100dvh - 40px);
+  overflow-y: auto;
+  background: var(--surface-overlay);
+  border: 0.5px solid var(--border-gold);
+  border-radius: 22px;
+  padding: 36px 32px 28px;
+  box-shadow: var(--elev-3);
+  font-family: var(--font);
+  color: var(--ink);
+  transform: translateY(18px) scale(0.97);
+  transition: transform 0.38s var(--ease-premium);
+}
+.le-overlay.is-open .le-card { transform: none; }
+
+.le-fechar {
+  position: absolute; top: 16px; right: 16px;
+  width: 32px; height: 32px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(var(--veil-rgb), var(--a-veil-1));
+  border: 0.5px solid var(--line);
+  color: var(--ink-3);
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+.le-fechar:hover { background: rgba(var(--veil-rgb), var(--a-veil-3)); color: var(--ink); }
+.le-fechar svg { width: 12px; height: 12px; stroke: currentColor; fill: none; stroke-width: 2.2; stroke-linecap: round; }
+
+/* ── Cabeçalho ── */
+.le-eyebrow {
+  display: inline-block;
+  font-size: 10.5px; font-weight: 600; letter-spacing: 1.6px;
+  color: var(--brand-ink);
+  margin-bottom: 12px;
+}
+.le-titulo {
+  font-size: 24px; font-weight: 600; line-height: 1.2; letter-spacing: -0.4px;
+  margin: 0 0 8px;
+}
+.le-sub {
+  font-size: 14px; line-height: 1.6; font-weight: 300;
+  color: var(--ink-3);
+  margin: 0 0 26px;
+}
+
+/* ── Campos ── */
+.le-form { display: flex; flex-direction: column; gap: 16px; }
+.le-campo { display: flex; flex-direction: column; gap: 7px; }
+.le-label {
+  font-size: 11.5px; font-weight: 500; letter-spacing: 0.3px;
+  color: var(--ink-3);
+}
+.le-input {
+  width: 100%;
+  background: rgba(var(--veil-rgb), var(--a-veil-1));
+  border: 0.5px solid var(--line-strong);
+  border-radius: 12px;
+  padding: 13px 16px;
+  font-family: var(--font); font-size: 14px;
+  color: var(--ink);
+  outline: none;
+  transition: border-color 0.25s, background 0.25s, box-shadow 0.25s;
+}
+.le-input::placeholder { color: var(--ink-4); }
+.le-input:focus {
+  border-color: var(--brand-ink);
+  background: rgba(var(--brand-tint-rgb), 0.04);
+  box-shadow: 0 0 0 3px rgba(var(--brand-tint-rgb), 0.09);
+}
+
+.le-campo.tem-erro .le-input { border-color: var(--danger-ink); }
+.le-erro {
+  font-size: 12px; color: var(--danger-ink);
+  min-height: 0;
+}
+.le-erro:empty { display: none; }
+
+/* ── Interesses: checkboxes em forma de cartão ── */
+.le-grupo { border: none; margin: 0; padding: 0; min-width: 0; }
+.le-grupo .le-label { padding: 0; }
+.le-dica { font-size: 11.5px; color: var(--ink-4); margin-top: -3px; }
+.le-opcoes { display: flex; flex-direction: column; gap: 8px; }
+.le-opcao {
+  position: relative;
+  display: flex; align-items: center; gap: 12px;
+  padding: 13px 16px;
+  border: 0.5px solid var(--line-strong);
+  border-radius: 12px;
+  background: rgba(var(--veil-rgb), var(--a-veil-1));
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
+}
+.le-opcao:hover { border-color: var(--border-gold); }
+.le-opcao input {
+  flex: none; margin: 0;
+  width: 16px; height: 16px;
+  accent-color: var(--brand);
+  cursor: pointer;
+}
+.le-opcao-texto { font-size: 14px; color: var(--ink); line-height: 1.35; }
+.le-opcao-agente {
+  margin-left: auto; flex: none;
+  font-size: 10.5px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase;
+  color: var(--ink-4);
+  transition: color 0.2s;
+}
+.le-opcao:has(input:checked) {
+  border-color: var(--brand-ink);
+  background: rgba(var(--brand-tint-rgb), 0.06);
+}
+.le-opcao:has(input:checked) .le-opcao-agente { color: var(--brand-ink); }
+.le-opcao:has(input:focus-visible) { box-shadow: 0 0 0 3px rgba(var(--brand-tint-rgb), 0.18); }
+.le-campo.tem-erro .le-opcao { border-color: var(--danger-ink); }
+
+/* Honeypot: fora da tela, não display:none — alguns robôs pulam
+   campo escondido por display, mas preenchem o que está "visível". */
+.le-mel {
+  position: absolute; left: -9999px; top: auto;
+  width: 1px; height: 1px; overflow: hidden;
+}
+
+/* ── Botão ── */
+.le-enviar {
+  margin-top: 4px;
+  width: 100%;
+  font-family: var(--font); font-size: 14px; font-weight: 600;
+  color: var(--on-brand);
+  /* --btn-metal-bg só existe no claro; no escuro o botão é ouro chapado. */
+  background: var(--btn-metal-bg, var(--gold));
+  border: none; border-radius: 12px;
+  padding: 14px 20px;
+  box-shadow: var(--btn-primary-glow);
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.2s, opacity 0.2s;
+}
+.le-enviar:hover { transform: translateY(-1px); box-shadow: var(--btn-primary-glow-hover); }
+.le-enviar:disabled { opacity: 0.6; cursor: default; transform: none; }
+
+.le-erro-geral {
+  font-size: 12.5px; color: var(--danger-ink); text-align: center;
+}
+.le-erro-geral:empty { display: none; }
+
+/* ── Estado de sucesso ── */
+.le-sucesso { display: none; text-align: center; padding: 12px 0 6px; }
+.le-card.enviado .le-form,
+.le-card.enviado .le-sub { display: none; }
+.le-card.enviado .le-sucesso { display: block; }
+.le-sucesso-icone {
+  width: 56px; height: 56px; margin: 4px auto 18px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  border: 0.5px solid var(--border-gold);
+  color: var(--brand-ink);
+}
+.le-sucesso-icone svg { width: 24px; height: 24px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.le-sucesso p { font-size: 14px; line-height: 1.6; color: var(--ink-3); margin: 0 0 22px; }
+
+@media (max-width: 520px) {
+  .le-overlay { padding: 12px; align-items: flex-end; }
+  .le-card { padding: 30px 22px 22px; border-radius: 20px; }
+  .le-titulo { font-size: 21px; }
+}
