@@ -1168,11 +1168,12 @@ footer:hover .footer-wordmark { color: rgba(var(--ink-rgb, 255,255,255), 0.6); }
   right: 28px;
   transform: translateY(calc(100% + 60px));
   z-index: 4000;
-  width: min(360px, calc(100vw - 56px));
+  width: max-content;
+  max-width: calc(100vw - 56px);
   display: flex;
   align-items: center;
-  gap: 16px;
-  padding: 18px 20px;
+  gap: 14px;
+  padding: 12px 12px 12px 18px;
   /* Dark glass dominates (70/20/10); gold only as a hairline edge */
   background: rgba(var(--panel-rgb, 20,20,22), 0.88);
   backdrop-filter: blur(48px) saturate(180%);
@@ -1229,17 +1230,38 @@ footer:hover .footer-wordmark { color: rgba(var(--ink-rgb, 255,255,255), 0.6); }
   transition: background 0.2s, transform 0.15s;
 }
 .upgrade-toast-btn:hover { background: var(--gold-light); transform: translateY(-1px); }
+/* X como selo no canto (metade para fora): não disputa a linha com o
+   título e o botão. Fundo opaco do painel para não vazar o que está atrás. */
 .upgrade-toast-close {
-  position: absolute; top: 10px; right: 10px;
-  width: 22px; height: 22px; border-radius: 6px;
-  background: rgba(var(--veil-rgb, 255,255,255), var(--a-veil-2, 0.06));
+  position: absolute; top: -9px; right: -9px;
+  width: 22px; height: 22px; border-radius: 50%;
+  background: rgb(var(--panel-rgb, 20,20,22));
   border: 0.5px solid rgba(var(--line-rgb, 255,255,255), var(--a-line-2, 0.1));
+  box-shadow: var(--elev-1, 0 2px 6px rgba(0,0,0,.3));
   display: flex; align-items: center; justify-content: center;
   cursor: pointer;
   transition: background 0.2s;
 }
-.upgrade-toast-close:hover { background: rgba(var(--veil-rgb, 255,255,255), var(--a-veil-3, 0.12)); }
+.upgrade-toast-close:hover { border-color: rgba(var(--line-rgb, 255,255,255), var(--a-line-2, 0.2)); }
+/* Área de toque maior que o círculo visível */
+.upgrade-toast-close::after { content: ''; position: absolute; inset: -10px; }
 .upgrade-toast-close svg { width: 10px; height: 10px; stroke: var(--muted); fill: none; stroke-width: 2.2; stroke-linecap: round; }
+
+/* Mobile: uma faixa compacta — título e botão na mesma linha, com o
+   X dentro do fluxo (não flutuando por cima do botão). */
+@media (max-width: 600px) {
+  .upgrade-toast {
+    left: 16px; right: 16px;
+    bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+    width: auto;
+    gap: 10px;
+    padding: 10px 10px 10px 16px;
+    border-radius: 14px;
+  }
+  .upgrade-toast-content { flex: 1; min-width: 0; }
+  .upgrade-toast-title { font-size: 13.5px; margin-bottom: 0; white-space: nowrap; }
+  .upgrade-toast-btn { padding: 8px 14px; font-size: 13px; border-radius: 9px; }
+}
 
 /* ── Scroll indicator ── */
 /* Estado de repouso = invisível. Quem mostra é a classe .is-visible,

@@ -1174,17 +1174,10 @@
   <button class="upgrade-toast-close" id="upgrade-toast-close" aria-label="Fechar">
     <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
   </button>
-  <div class="upgrade-toast-icon">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-      <polyline points="3 17 9 11 13 15 21 7"/>
-      <polyline points="15 7 21 7 21 13"/>
-    </svg>
-  </div>
   <div class="upgrade-toast-content">
     <div class="upgrade-toast-title">Pronto pra ir além?</div>
-    <div class="upgrade-toast-desc">Relatórios mais fundos, alertas do Argos em tempo real e o Plutos te ensinando a investir, no seu ritmo.</div>
   </div>
-  <a href="#" class="upgrade-toast-btn" data-lista-espera>Entrar na lista</a>
+  <a href="#comecar" class="upgrade-toast-btn" id="upgrade-toast-btn">Entrar na lista</a>
 </div>
 
 <script src="../scripts/components/modal-perfil.js"></script>
@@ -1692,11 +1685,38 @@
       }, 15000);
     }
 
-    closeBtn.addEventListener('click', function () {
+    function esconder() {
       toast.classList.remove('visible');
       toast.classList.add('hiding');
       localStorage.setItem('kerdos-toast-dismissed', '1');
-    });
+    }
+
+    closeBtn.addEventListener('click', esconder);
+
+    /* "Entrar na lista" leva até a seção final (#comecar) e, ao chegar,
+       abre o formulário da lista de espera. */
+    var ctaBtn = document.getElementById('upgrade-toast-btn');
+    var alvo   = document.getElementById('comecar');
+    if (ctaBtn && alvo) {
+      ctaBtn.addEventListener('click', function (e) {
+        e.preventDefault();
+        esconder();
+
+        var reduz = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        alvo.scrollIntoView({ behavior: reduz ? 'auto' : 'smooth', block: 'center' });
+
+        var aberto = false;
+        function abrirForm() {
+          if (aberto) return;
+          aberto = true;
+          window.removeEventListener('scrollend', abrirForm);
+          if (window.KerdosListaEspera) window.KerdosListaEspera.abrir();
+        }
+        /* scrollend não existe no Safari antigo: o timeout garante a abertura */
+        window.addEventListener('scrollend', abrirForm);
+        setTimeout(abrirForm, reduz ? 0 : 1200);
+      });
+    }
   })();
 
   /* SECURITY — sticky-scroll progressive reveal */
