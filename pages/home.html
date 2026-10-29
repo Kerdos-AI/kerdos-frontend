@@ -72,41 +72,23 @@
     ]
   }
   </script>
-  <script>
-    /* Anti-FOUC de autenticação — inline, bloqueante, antes de
-       qualquer CSS. Sem ele o navegador pinta a navbar de visitante
-       e o JS só corrige depois do DOMContentLoaded. Os dois estados
-       existem no HTML; esta classe é quem escolhe (styles/navbar.css). */
-    (function(){
-      var e = document.documentElement;
-      try{
-        e.classList.add(
-          localStorage.getItem('kerdos_logged_in') === 'true'
-            ? 'auth-logado' : 'auth-visitante'
-        );
-      }catch(err){
-        e.classList.add('auth-visitante');
-      }
-    })();
-  </script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300..700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../styles/core/theme.css">
   <link rel="stylesheet" href="../styles/components/navbar.css">
   <!-- Opt-out das View Transitions entre páginas (evita o loader esmaecido no cross-fade) -->
   <style>@view-transition { navigation: none; }</style>
   <link rel="stylesheet" href="../styles/core/style.css">
-  <link rel="stylesheet" href="../styles/components/modal-perfil.css">
   <link rel="stylesheet" href="../styles/components/lista-espera.css">
-  <script src="../scripts/core/auth.js"></script>
-  <script src="../scripts/core/format.js"></script>
-  <script src="../scripts/components/cursor.js" defer></script>
   <link rel="stylesheet" href="../styles/core/scrollbar.css">
+  <!-- Nenhum script bloqueia o <head>: todos são defer e rodam em ordem
+       depois do HTML (format.js antes de how-it-works.js, que usa ele). -->
+  <script src="../scripts/core/format.js" defer></script>
+  <script src="../scripts/components/cursor.js" defer></script>
   <link rel="icon" type="image/png" sizes="32x32" href="../assets/icone-32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="../assets/icone-16.png">
   <link rel="apple-touch-icon" href="../assets/icone-180.png">
-  <noscript><style>[data-auth="visitante"]{display:flex}</style></noscript>
 </head>
 <body class="sem-scrollbar">
 
@@ -338,7 +320,7 @@
         <div class="phone-home" aria-hidden="true"></div>
 
         </div><!-- /.device-screen -->
-        <img class="device-shell" src="../assets/iphone-frame.png" alt="" aria-hidden="true" draggable="false">
+        <img class="device-shell" src="../assets/iphone-frame.webp" width="1200" height="2265" fetchpriority="high" decoding="async" alt="" aria-hidden="true" draggable="false">
       </div><!-- /.device-mockup -->
       </div><!-- /.device-stage -->
 
@@ -883,241 +865,6 @@
   </div>
 </section>
 
-<!-- ═══ MODAL PERFIL ═══ -->
-<div id="modal-overlay" class="modal-overlay" aria-hidden="true">
-  <div class="mp-wrap">
-
-    <button class="mp-close" id="mp-close" aria-label="Fechar">
-      <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-    </button>
-
-    <!-- SIDEBAR -->
-    <aside class="mp-side">
-      <div class="mp-user">
-        <div class="mp-avatar" id="modal-avatar">N</div>
-        <div>
-          <div class="mp-user-name" id="modal-user-name">Nathan</div>
-          <div class="mp-plan-tag">Gratuito</div>
-        </div>
-      </div>
-      <div class="mp-nav">
-        <button class="mp-nav-item active" data-tab="perfil">
-          <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-          <span>Perfil</span>
-        </button>
-        <button class="mp-nav-item" data-tab="aparencia">
-          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
-          <span>Aparência</span>
-        </button>
-        <button class="mp-nav-item" data-tab="notificacoes">
-          <svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
-          <span>Notificações</span>
-        </button>
-        <button class="mp-nav-item" data-tab="privacidade">
-          <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-          <span>Privacidade</span>
-        </button>
-        <button class="mp-nav-item" data-tab="seguranca">
-          <svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-          <span>Segurança</span>
-        </button>
-        <button class="mp-nav-item nav-danger" data-tab="conta">
-          <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-          <span>Conta</span>
-        </button>
-      </div>
-    </aside>
-
-    <!-- CORPO -->
-    <div class="mp-body">
-
-      <!-- ── PERFIL ── -->
-      <div class="mp-tab" id="tab-perfil">
-        <div class="mp-tab-hd">
-          <h3>Perfil</h3>
-          <p>Gerencie suas informações pessoais</p>
-        </div>
-        <div class="mp-av-row">
-          <div class="mp-av-big" id="modal-av-big">N</div>
-          <div class="mp-av-actions">
-            <button class="mp-btn-outline" id="btn-change-photo" type="button">Alterar foto</button>
-            <input type="file" id="modal-input-photo" accept="image/jpeg,image/png,image/gif" hidden>
-            <span class="mp-hint">JPG, PNG ou GIF. Máx 2 MB.</span>
-          </div>
-        </div>
-        <div class="mp-divider"></div>
-        <div class="mp-fg">
-          <div class="mp-field">
-            <label>Nome completo</label>
-            <input type="text" class="mp-input" id="modal-input-name" value="Nathan" maxlength="50">
-            <span class="mp-counter" id="counter-name">0/50</span>
-          </div>
-          <div class="mp-field">
-            <label>E-mail</label>
-            <input type="email" class="mp-input" id="modal-input-email" value="nathan@kerdos.ai" readonly>
-          </div>
-          <div class="mp-field full mp-field-tip">
-            <label>Sobre mim</label>
-            <textarea class="mp-input mp-textarea" id="modal-input-about" placeholder="Conte um pouco sobre você…" maxlength="300" aria-describedby="tip-about"></textarea>
-            <span class="mp-tip" id="tip-about" role="tooltip">O que você escrever aqui vira contexto para o Voithos: metas, rotina, com o que você trabalha, o que te aperta no fim do mês. Quanto mais ele souber de você, mais os conselhos financeiros batem com a sua vida real.</span>
-            <span class="mp-counter" id="counter-about">0/300</span>
-          </div>
-        </div>
-        <div class="mp-actions">
-          <button class="mp-btn-primary" id="btn-save-profile">Salvar alterações</button>
-        </div>
-      </div>
-
-      <!-- ── APARÊNCIA ── -->
-      <div class="mp-tab hidden" id="tab-aparencia">
-        <div class="mp-tab-hd">
-          <h3>Aparência</h3>
-          <p>Personalize a interface da Kerdos Finance</p>
-        </div>
-        <div class="mp-section-lbl" style="margin-top:0;">Cursor</div>
-        <label class="s-row" style="border-bottom:none;">
-          <div class="s-row-info">
-            <div class="s-lbl">Cursor personalizado</div>
-            <div class="s-desc">Desative se preferir o cursor padrão do sistema</div>
-          </div>
-          <div class="s-toggle">
-            <input type="checkbox" class="s-toggle-cb" id="toggle-cursor-custom" checked>
-            <span class="s-knob"></span>
-          </div>
-        </label>
-      </div>
-
-      <!-- ── NOTIFICAÇÕES ── -->
-      <div class="mp-tab hidden" id="tab-notificacoes">
-        <div class="mp-tab-hd">
-          <h3>Notificações</h3>
-          <p>Escolha quando e como ser avisado</p>
-        </div>
-        <div class="mp-section-lbl">Alertas financeiros</div>
-        <div class="s-row s-row-disabled" data-tooltip="Em breve">
-          <div class="s-row-info"><div class="s-lbl">Alertas de gastos incomuns</div><div class="s-desc">Notificação imediata quando um gasto fugir do seu padrão</div></div>
-          <div class="s-toggle"><input type="checkbox" class="s-toggle-cb" data-key="notif-gastos" disabled><span class="s-knob"></span></div>
-        </div>
-        <div class="s-row s-row-disabled" data-tooltip="Em breve">
-          <div class="s-row-info"><div class="s-lbl">Resumo diário</div><div class="s-desc">Receba um resumo dos seus gastos do dia</div></div>
-          <div class="s-toggle"><input type="checkbox" class="s-toggle-cb" data-key="notif-diario" disabled><span class="s-knob"></span></div>
-        </div>
-        <div class="s-row s-row-disabled" data-tooltip="Em breve">
-          <div class="s-row-info"><div class="s-lbl">Insights semanais</div><div class="s-desc">Análise comparativa com semanas anteriores</div></div>
-          <div class="s-toggle"><input type="checkbox" class="s-toggle-cb" data-key="notif-semanal" disabled><span class="s-knob"></span></div>
-        </div>
-        <div class="mp-section-lbl" style="margin-top:20px;">Investimentos</div>
-        <label class="s-row">
-          <div class="s-row-info"><div class="s-lbl">Alertas do Plutos</div><div class="s-desc">Variações relevantes nos seus ativos acompanhados</div></div>
-          <div class="s-toggle"><input type="checkbox" class="s-toggle-cb" data-key="notif-plutos" checked><span class="s-knob"></span></div>
-        </label>
-        <div class="s-row s-row-disabled" data-tooltip="Em breve">
-          <div class="s-row-info"><div class="s-lbl">Relatório mensal por e-mail</div><div class="s-desc">Resumo completo do seu mês financeiro</div></div>
-          <div class="s-toggle"><input type="checkbox" class="s-toggle-cb" data-key="notif-email" disabled><span class="s-knob"></span></div>
-        </div>
-      </div>
-
-      <!-- ── PRIVACIDADE ── -->
-      <div class="mp-tab hidden" id="tab-privacidade">
-        <div class="mp-tab-hd">
-          <h3>Privacidade e dados</h3>
-          <p>Controle como seus dados são usados</p>
-        </div>
-        <div class="mp-section-lbl">Uso de dados</div>
-        <div class="s-row s-row-disabled" data-tooltip="Em breve">
-          <div class="s-row-info"><div class="s-lbl">Melhorar a IA com minhas conversas</div><div class="s-desc">Permite que o Voithos aprenda com seu histórico (dados anônimos)</div></div>
-          <div class="s-toggle"><input type="checkbox" class="s-toggle-cb" data-key="priv-ia" disabled><span class="s-knob"></span></div>
-        </div>
-        <label class="s-row">
-          <div class="s-row-info"><div class="s-lbl">Análise anônima de uso</div><div class="s-desc">Ajuda a melhorar a experiência geral do app</div></div>
-          <div class="s-toggle"><input type="checkbox" class="s-toggle-cb" data-key="priv-analytics" checked><span class="s-knob"></span></div>
-        </label>
-        <label class="s-row">
-          <div class="s-row-info"><div class="s-lbl">Histórico de conversas</div><div class="s-desc">Salvar histórico para contexto futuro com o Voithos</div></div>
-          <div class="s-toggle"><input type="checkbox" class="s-toggle-cb" data-key="priv-historico" checked><span class="s-knob"></span></div>
-        </label>
-        <div class="mp-divider"></div>
-        <div class="mp-section-lbl">Seus dados</div>
-        <div class="s-row s-row-disabled" data-tooltip="Em breve">
-          <div class="s-row-info"><div class="s-lbl">Exportar meus dados</div><div class="s-desc">Baixe um arquivo com todas as suas informações</div></div>
-          <button class="mp-btn-outline" disabled>Exportar</button>
-        </div>
-        <div class="s-row" style="cursor:default;border-bottom:none;">
-          <div class="s-row-info"><div class="s-lbl">Excluir histórico</div><div class="s-desc">Remove todas as conversas com o Voithos</div></div>
-          <button class="mp-btn-danger" style="font-size:12px;padding:7px 14px;">Excluir</button>
-        </div>
-      </div>
-
-      <!-- ── SEGURANÇA ── -->
-      <div class="mp-tab hidden" id="tab-seguranca">
-        <div class="mp-tab-hd">
-          <h3>Segurança</h3>
-          <p>Gerencie o acesso à sua conta</p>
-        </div>
-        <div class="mp-section-lbl">Autenticação</div>
-        <div class="s-row s-row-disabled" data-tooltip="Em breve">
-          <div class="s-row-info"><div class="s-lbl">Autenticação em dois fatores</div><div class="s-desc">Proteja sua conta com um segundo fator ao entrar</div></div>
-          <div class="s-toggle"><input type="checkbox" class="s-toggle-cb" data-key="seg-2fa" disabled><span class="s-knob"></span></div>
-        </div>
-        <div class="mp-divider"></div>
-        <div class="mp-section-lbl">Alterar senha</div>
-        <form id="mp-pwd-form" style="display:flex;flex-direction:column;gap:11px;">
-          <div class="mp-field">
-            <label>Senha atual</label>
-            <input id="mp-pwd-current" type="password" class="mp-input" placeholder="••••••••" required>
-          </div>
-          <div class="mp-field">
-            <label>Nova senha</label>
-            <input id="mp-pwd-new" type="password" class="mp-input" placeholder="Mín. 8 caracteres" required>
-          </div>
-          <div class="mp-field">
-            <label>Confirmar nova senha</label>
-            <input id="mp-pwd-confirm" type="password" class="mp-input" placeholder="Repita a nova senha" required>
-          </div>
-          <div id="mp-pwd-err" style="display:none;font-size:12px;color:var(--red);"></div>
-          <div>
-            <button type="submit" class="mp-btn-primary" style="margin-top:4px;">Alterar senha</button>
-          </div>
-        </form>
-      </div>
-
-      <!-- ── CONTA ── -->
-      <div class="mp-tab hidden" id="tab-conta">
-        <div class="mp-tab-hd">
-          <h3>Conta</h3>
-          <p>Informações do seu plano e conta</p>
-        </div>
-        <div class="mp-section-lbl">Plano atual</div>
-        <div class="mp-plan-card">
-          <div>
-            <div class="mp-plan-name">Kerdos Free</div>
-            <div class="mp-plan-desc">Plano gratuito com recursos essenciais</div>
-            <div class="mp-plan-feats">
-              <div class="mp-plan-feat">Voithos IA — registro por chat</div>
-              <div class="mp-plan-feat">Relatórios básicos mensais</div>
-              <div class="mp-plan-feat">Até 3 contas conectadas</div>
-            </div>
-          </div>
-          <button class="mp-upgrade-btn">Fazer upgrade</button>
-        </div>
-        <div class="mp-divider"></div>
-        <div class="mp-section-lbl">Informações</div>
-        <div class="mp-info-row"><span class="mp-info-lbl">Membro desde</span><span class="mp-info-val">Janeiro de 2025</span></div>
-        <div class="mp-info-row"><span class="mp-info-lbl">E-mail verificado</span><span class="mp-info-val" style="color:var(--green);">✓ Verificado</span></div>
-        <div class="mp-info-row" style="border:none;"><span class="mp-info-lbl">ID da conta</span><span class="mp-info-val" style="font-size:11px;color:var(--muted);">KRD-2025-00142</span></div>
-        <div class="mp-divider"></div>
-        <div class="mp-section-lbl" style="color:var(--red);">Zona de perigo</div>
-        <div class="mp-danger-zone">
-          <div class="mp-danger-title">Excluir conta</div>
-          <div class="mp-danger-desc">Esta ação é irreversível. Todos os seus dados, histórico e conexões bancárias serão removidos permanentemente.</div>
-          <button class="mp-btn-danger">Excluir minha conta</button>
-        </div>
-      </div>
-
-    </div><!-- /mp-body -->
-  </div><!-- /mp-wrap -->
-</div><!-- /modal-overlay -->
-
 <!-- ═══ UPGRADE TOAST ═══ -->
 <div id="upgrade-toast" class="upgrade-toast" role="status" aria-live="polite">
   <button class="upgrade-toast-close" id="upgrade-toast-close" aria-label="Fechar">
@@ -1129,15 +876,11 @@
   <a href="#comecar" class="upgrade-toast-btn" id="upgrade-toast-btn">Entrar na lista</a>
 </div>
 
-<script src="../scripts/components/modal-perfil.js"></script>
-<script src="../scripts/components/tcc-popup.js" defer></script>
 <script src="../scripts/components/lista-espera.js" defer></script>
 <script src="../scripts/components/how-it-works.js" defer></script>
 <script src="../scripts/components/swipe.js"></script>
 
 <script>
-  /* authState gerenciado por auth.js */
-
   /* NAVBAR SCROLL SHRINK */
   const navEl = document.querySelector('nav');
   window.addEventListener('scroll', () => {

@@ -1,6 +1,10 @@
-@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
+/* Space Grotesk vem do <link> no <head> do home.html. Não repita aqui
+   com @import: ele baixava a mesma fonte de novo e bloqueava a pintura.
 
-/* SF Pro Display — used exclusively inside .device-screen */
+   SF Pro Display — used exclusively inside .device-screen. Os .woff2
+   foram recortados (fonttools subset) para Latin + Latin-1 + pontuação:
+   ~14 KB cada em vez de ~105 KB. Precisa de outro caractere no mockup?
+   Refaça o subset com o unicode dele. */
 @font-face {
   font-family: 'SF Pro Display';
   src: url('../../assets/fonts/SFProDisplay-Regular.woff2') format('woff2');
@@ -161,7 +165,7 @@ body::after {
 }
 
 /* z-index stacking */
-.hero-v2, .section-wrap, .security-section, .team-section, footer, .divider-line { position: relative; z-index: 1; }
+.security-section, .team-section { position: relative; z-index: 1; }
 
 /* ══ NAVBAR — estilos em navbar.css ══ */
 
@@ -226,94 +230,8 @@ h1 .accent {
   transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
 }
 .btn-primary:hover { background: var(--gold-light); transform: translateY(-2px); box-shadow: var(--btn-primary-glow-hover); }
-.btn-secondary {
-  font-size: 14px; font-weight: 400;
-  color: var(--muted); background: transparent;
-  border: 1px solid rgba(var(--line-rgb, 255,255,255), var(--a-line-2, 0.1)); padding: 13px 28px; border-radius: 10px;
-  text-decoration: none; display: inline-block;
-  transition: all 0.3s ease;
-}
-.btn-secondary:hover { border-color: var(--brand-ink); color: var(--white); background: rgba(var(--veil-rgb, 255,255,255), var(--a-veil-2, 0.04)); transform: translateY(-2px); }
 
-/* ── Chat demo ── */
-.chat-demo {
-  background: rgba(var(--card-rgb, 58,58,63), 0.7);
-  backdrop-filter: blur(32px) saturate(160%);
-  -webkit-backdrop-filter: blur(32px) saturate(160%);
-  border: 0.5px solid rgba(var(--line-rgb, 255,255,255), var(--a-line, 0.09));
-  border-radius: 22px;
-  overflow: hidden;
-  margin-top: 36px;
-  box-shadow: var(--elev-3), var(--spec-hairline);
-  opacity: 0;
-  animation: slide-up 1s 2.5s cubic-bezier(0.16,1,0.3,1) forwards;
-}
-
-.chat-header {
-  background: rgba(var(--panel-rgb, 42,42,46), 0.9);
-  border-bottom: 0.5px solid rgba(var(--line-rgb, 255,255,255), var(--a-line, 0.07));
-  padding: 14px 20px;
-  display: flex; align-items: center; gap: 12px;
-}
-.chat-avatar {
-  width: 36px; height: 36px; border-radius: 50%;
-  background: var(--gold);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 14px; font-weight: 700; color: var(--on-brand); flex-shrink: 0;
-  box-shadow: 0 0 14px rgba(var(--brand-tint-rgb, 228,156,0), 0.3);
-}
-.chat-header-info { flex: 1; }
-.chat-name   { font-size: 13px; font-weight: 600; color: var(--white); }
-.chat-online {
-  display: flex; align-items: center; gap: 5px;
-  font-size: 10.5px; color: var(--ok-ink); margin-top: 1px;
-}
-.online-dot {
-  width: 5px; height: 5px; border-radius: 50%;
-  background: var(--green);
-  animation: blink 2s ease-in-out infinite; flex-shrink: 0;
-}
 @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.2} }
-
-.chat-header-right { display: flex; align-items: center; gap: 10px; margin-left: auto; }
-.chat-agent-pill {
-  font-size: 9px; font-weight: 600; color: var(--brand-ink);
-  background: rgba(var(--brand-tint-rgb, 228,156,0), 0.1); border: 0.5px solid var(--border-gold);
-  padding: 3px 9px; border-radius: 999px;
-  letter-spacing: 0.5px; text-transform: uppercase;
-}
-.chat-typing-dots { display: flex; align-items: center; gap: 3px; }
-.chat-typing-dots span {
-  width: 4px; height: 4px; border-radius: 50%;
-  background: rgba(var(--ink-rgb, 255,255,255), var(--a-ink-4, 0.2));
-}
-.chat-typing-dots span:nth-child(1) { animation: tdot 1.2s 0.0s ease-in-out infinite; }
-.chat-typing-dots span:nth-child(2) { animation: tdot 1.2s 0.2s ease-in-out infinite; }
-.chat-typing-dots span:nth-child(3) { animation: tdot 1.2s 0.4s ease-in-out infinite; }
-@keyframes tdot { 0%,100%{transform:translateY(0);opacity:0.3} 50%{transform:translateY(-4px);opacity:1} }
-
-.chat-messages { display: flex; flex-direction: column; gap: 10px; padding: 18px 20px; }
-.msg { max-width: 82%; }
-.msg-user { align-self: flex-end; }
-.msg-bot  { align-self: flex-start; }
-.msg-bubble { padding: 10px 15px; border-radius: 17px; font-size: 13.5px; line-height: 1.5; }
-.msg-user .msg-bubble { background: rgba(var(--brand-tint-rgb, 228,156,0), 0.13); border: 0.5px solid var(--border-gold); color: var(--text); border-bottom-right-radius: 4px; }
-.msg-bot  .msg-bubble { background: rgba(var(--veil-rgb, 255,255,255), var(--a-veil-2, 0.05)); border: 0.5px solid rgba(var(--line-rgb, 255,255,255), var(--a-line, 0.07)); color: var(--text); border-bottom-left-radius: 4px; }
-.msg-time { font-size: 10px; color: var(--muted2); margin-top: 4px; }
-.msg-user .msg-time { text-align: right; }
-
-.chat-input-bar {
-  border-top: 0.5px solid rgba(var(--line-rgb, 255,255,255), var(--a-line, 0.06));
-  padding: 12px 16px;
-  display: flex; align-items: center; gap: 10px;
-}
-.chat-input-placeholder { flex: 1; font-size: 12.5px; color: var(--ink-4); }
-.chat-send-btn {
-  width: 28px; height: 28px; border-radius: 7px;
-  background: var(--gold);
-  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
-}
-.chat-send-btn svg { width: 12px; height: 12px; stroke: var(--on-brand); fill: none; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
 
 /* ── Phone ── */
 .hero-visual {
@@ -349,7 +267,7 @@ h1 .accent {
 }
 
 /* Transparent area = live HTML content.
-   Values measured directly from assets/iphone-frame.png (6736×12712):
+   Values measured on the original 6736×12712 frame (now assets/iphone-frame.webp, 1200×2265 — same proportions):
    aperture x 804→5940, y 808→11920, notch 2305→4431 × 461px deep, corner r ≈ 620px.
    The screen now fills the WHOLE aperture (it runs behind the notch, like a real
    iPhone) — the PNG's opaque notch masks the strip between the two "ears". */
@@ -429,27 +347,6 @@ h1 .accent {
 /* translate3d promotes to compositor layer → avoids sub-pixel blur on animated elements */
 @keyframes float { 0%,100%{transform:translate3d(0,0,0) rotate(-0.2deg)} 50%{transform:translate3d(0,-7px,0) rotate(0.2deg)} }
 
-.phone-top  { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-.phone-logo { font-size: 12px; font-weight: 700; color: rgba(var(--ink-rgb, 255,255,255), var(--a-ink-1, 0.85)); }
-.phone-time { font-size: 11px; color: var(--ink-4); }
-
-.balance-label  { font-size: 9px; color: var(--ink-4); text-transform: uppercase; letter-spacing: 1.2px; margin-bottom: 4px; }
-.balance-value  { font-size: 32px; font-weight: 700; color: var(--white); letter-spacing: -1.8px; margin-bottom: 3px; }
-.balance-change { font-size: 11px; color: var(--ok-ink); margin-bottom: 16px; font-weight: 500; }
-
-.meta-box { background: rgba(var(--brand-tint-rgb, 228,156,0), 0.1); border: 0.5px solid rgba(var(--brand-tint-rgb, 228,156,0), 0.22); border-radius: 11px; padding: 11px 13px; margin-bottom: 16px; }
-.meta-top-row   { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
-.meta-label     { font-size: 9px; color: var(--brand-ink); text-transform: uppercase; letter-spacing: 0.9px; }
-.meta-pct       { font-size: 12px; font-weight: 700; color: var(--white); }
-.meta-bar-track { height: 3px; background: rgba(var(--veil-rgb, 255,255,255), var(--a-veil-2, 0.07)); border-radius: 99px; overflow: hidden; }
-.meta-bar-fill  { width: 68%; height: 100%; background: linear-gradient(90deg, var(--gold), var(--gold-light)); border-radius: 99px; }
-
-.transactions { display: flex; flex-direction: column; gap: 9px; }
-.tx-row  { display: flex; justify-content: space-between; align-items: center; }
-.tx-name { font-size: 11.5px; color: var(--muted); }
-.tx-val  { font-size: 11.5px; font-weight: 600; }
-.tx-neg  { color: var(--danger-ink); }
-.tx-pos  { color: var(--ok-ink); }
 .float-card {
   position: absolute;
   background: rgba(var(--panel-rgb, 52,52,56), 0.92);
@@ -491,7 +388,6 @@ h1 .accent {
 /* ══════════════════════════════════
    SECTIONS
 ══════════════════════════════════ */
-.section-wrap { padding: 110px 80px; max-width: 1240px; margin: 0 auto; }
 .section-tag { display: inline-block; font-size: 10.5px; font-weight: 600; color: var(--brand-ink); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 16px; }
 h2 { font-family: var(--font); font-size: clamp(34px, 3.8vw, 52px); font-weight: 700; line-height: 1.05; letter-spacing: -2px; color: var(--white); margin-bottom: 18px; }
 h2 .accent { color: var(--brand-display); }
@@ -883,33 +779,6 @@ h2 .accent { color: var(--brand-display); }
 .cta-final-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
 @media (max-width: 1020px) { .cta-final { padding: 88px 24px 96px; } }
 
-/* Footer — largura cheia, de propósito: o resto da página é um container
-   de 1240px centralizado, mas o rodapé sangra até as bordas da tela. */
-.divider-line { height: 0.5px; background: var(--border); }
-footer { padding: 64px 80px 40px; }
-.footer-top { display: grid; grid-template-columns: 1.6fr 1fr 1fr; gap: 56px; margin-bottom: 52px; }
-.footer-wordmark { display: inline-flex; margin-bottom: 16px; color: rgba(var(--ink-rgb, 255,255,255), 0.35); transition: color 0.3s ease; }
-.footer-wordmark svg { height: 22px; width: auto; display: block; }
-footer:hover .footer-wordmark { color: rgba(var(--ink-rgb, 255,255,255), 0.6); }
-.footer-tagline { font-size: 13px; color: var(--muted); line-height: 1.65; font-weight: 300; max-width: 240px; margin-bottom: 24px; }
-.social-links { display: flex; gap: 8px; }
-.social-link { width: 36px; height: 36px; border-radius: 9px; background: var(--bg3); border: 0.5px solid var(--border); display: flex; align-items: center; justify-content: center; text-decoration: none; color: var(--muted); transition: border-color 0.2s, background 0.2s; }
-.social-link svg { width: 15px; height: 15px; stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; transition: stroke 0.2s; }
-.social-link:hover { border-color: var(--border-gold); background: rgba(var(--brand-tint-rgb, 228,156,0), 0.08); }
-.social-link:hover svg { stroke: var(--brand-ink); }
-.footer-col h4 { font-size: 11px; font-weight: 700; color: var(--white); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 18px; }
-.footer-col ul { list-style: none; }
-.footer-col ul li { margin-bottom: 10px; }
-.footer-col ul li a { font-size: 13px; color: var(--muted); text-decoration: none; font-weight: 300; transition: color 0.2s; }
-.footer-col ul li a:hover { color: var(--white); }
-.footer-contact { font-size: 13px; color: var(--muted); font-weight: 300; line-height: 2.1; }
-.footer-contact a { color: var(--brand-ink); text-decoration: none; }
-.footer-bottom { border-top: 0.5px solid var(--border); padding-top: 24px; display: flex; justify-content: space-between; align-items: center; }
-.footer-copy { font-size: 12px; color: rgba(var(--ink-rgb, 255,255,255), 0.25); font-weight: 300; }
-.footer-legal { display: flex; gap: 20px; }
-.footer-legal a { font-size: 12px; color: var(--muted2); text-decoration: none; transition: color 0.2s; }
-.footer-legal a:hover { color: var(--muted); }
-
 /* Reveal */
 @keyframes slide-up   { from{opacity:0;transform:translateY(28px)} to{opacity:1;transform:translateY(0)} }
 @keyframes slide-left { from{opacity:0;transform:translateX(32px)} to{opacity:1;transform:translateX(0)} }
@@ -1200,16 +1069,8 @@ footer:hover .footer-wordmark { color: rgba(var(--ink-rgb, 255,255,255), 0.6); }
   pointer-events: none;
   transition: transform 0.4s cubic-bezier(0.4,0,1,1), opacity 0.3s;
 }
-.upgrade-toast-icon {
-  width: 42px; height: 42px; border-radius: 12px; flex-shrink: 0;
-  background: rgba(var(--brand-tint-rgb, 228,156,0), 0.09);
-  border: 0.5px solid rgba(var(--brand-tint-rgb, 228,156,0), 0.20);
-  display: flex; align-items: center; justify-content: center;
-}
-.upgrade-toast-icon svg { width: 20px; height: 20px; stroke: var(--brand-ink); fill: none; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
 .upgrade-toast-content { flex: 1; }
 .upgrade-toast-title { font-size: 13.5px; font-weight: 600; color: var(--white); margin-bottom: 3px; }
-.upgrade-toast-desc  { font-size: 12px; color: var(--muted); font-weight: 300; line-height: 1.5; }
 .upgrade-toast-btn {
   font-size: 13px; font-weight: 600;
   color: var(--on-brand); background: var(--gold);
@@ -1303,17 +1164,13 @@ footer:hover .footer-wordmark { color: rgba(var(--ink-rgb, 255,255,255), 0.6); }
 }
 @media (max-width: 1020px) {
   .hero { grid-template-columns: 1fr; padding: 130px 40px 80px; }
-  .section-wrap, .team-section { padding: 80px 40px; }
-  .security-inner { grid-template-columns: 1fr; padding: 0 40px; gap: 52px; }
+  .team-section { padding: 80px 40px; }
   .team-card { width: 300px; margin-left: -150px; }
   .team-card.tc-left  { transform: translateX(-340px) scale(0.84); }
   .team-card.tc-right { transform: translateX(340px)  scale(0.84); }
   .team-popup-card { flex-direction: column; width: 92vw; }
   .team-popup-photo { width: 100%; min-width: unset; height: 200px; border-right: none; border-bottom: 0.5px solid var(--border); }
   .team-popup-body { padding: 24px 22px 28px; justify-content: flex-start; }
-  .footer-top { grid-template-columns: 1fr; gap: 36px; }
-  footer { padding: 52px 40px 36px; }
-  .nav-links { display: none; }
   nav { width: calc(100vw - 40px); }
   nav.scrolled { max-width: calc(100vw - 40px); }
 }
@@ -1883,10 +1740,7 @@ footer:hover .footer-wordmark { color: rgba(var(--ink-rgb, 255,255,255), 0.6); }
 /* ── Reduced motion ── */
 @media (prefers-reduced-motion: reduce) {
   .hiw-orb, .hiw-vt-mark circle,
-  .eye-scan-group, .eye-blink-group, .argos-dot,
   .hiw-notif-front, .hiw-notif-back { animation: none !important; }
-  .argos-dot { opacity: 0.4; }
-  .eye-blink-group { opacity: 1; }
   .hiw-notif-back { transform: scale(0.85) translate(24px,-24px); }
   .hiw-card, .hiw-eyebrow, .hiw-heading, .hiw-sub, .hiw-caption, .hiw-vt-msg { transition-duration: 200ms !important; }
   .hiw-card.hiw-visible, .hiw-caption.hiw-visible,
@@ -2178,4 +2032,21 @@ footer:hover .footer-wordmark { color: rgba(var(--ink-rgb, 255,255,255), 0.6); }
 }
 @media (max-width: 380px) {
   .device-stage { zoom: 0.64; }
+}
+
+/* ── Celular: sem movimento contínuo caro ──
+   Três animações infinitas custam caro no celular e quase não aparecem:
+   · o float do .device-mockup, que roda dentro do drop-shadow de 80px do
+     .device-stage — o pai filtrado é repintado a cada quadro (de
+     propósito, para a moldura não borrar; ver .device-mockup);
+   · o float dos cards do Argos e do Plutos, que têm backdrop-filter;
+   · o drift das três orbs de fundo, blocos de até 750px com blur.
+   Em tela de celular isso vira GPU e bateria gastas o tempo todo e
+   rolagem travando em aparelho intermediário. Aqui elas ficam paradas
+   na posição de repouso; as entradas (appear/slide) continuam. */
+@media (max-width: 768px) {
+  .device-mockup, .alert-card, .stock-card { animation: none; }
+  .orb-a { animation: appear 1.6s 1.2s forwards; }
+  .orb-b { animation: appear 1.6s 1.5s forwards; }
+  .orb-c { animation: appear 1.6s 1.8s forwards; }
 }

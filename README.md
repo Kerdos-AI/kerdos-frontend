@@ -1,59 +1,50 @@
-# Kerdos Finance · Landing Page
+<div align="center">
 
-> Suas finanças, por conversa.
+# Kerdos Finance
 
-Landing page de pré-lançamento da **Kerdos Finance**, um assistente financeiro pessoal que funciona pelo WhatsApp: você manda uma mensagem dizendo quanto gastou e a Kerdos anota, organiza e avisa quando o mês começa a sair do trilho.
+**Suas finanças, por conversa.**
 
-🌐 **Site:** [kerdos.com.br](https://kerdos.com.br)
+Mande uma mensagem dizendo quanto gastou. A Kerdos anota, organiza e avisa quando o mês começar a sair do trilho.
+Tudo pelo WhatsApp, sem baixar nada.
 
----
+### 🌐 [kerdosfinance.com](https://www.kerdosfinance.com/)
 
-## 🚧 Projeto futuro
-
-Esta landing é a porta de entrada de um **projeto que ainda está em construção**. O produto não foi lançado: por enquanto, o site apresenta a proposta e coleta interessados em uma **lista de espera**.
-
-O que vem por aí são três agentes:
-
-| Agente | Função |
-| --- | --- |
-| **Voithos** | Dia a dia: registra gastos por texto, áudio, foto ou PDF e categoriza sozinho. |
-| **Argos** | Análise: acompanha seus padrões e avisa quando algo sai da curva. |
-| **Plutos** | Educação: trilha para aprender o básico de investimentos antes de investir. |
+</div>
 
 ---
 
-## Stack
+## 🚧 Um projeto em construção
 
-- HTML, CSS e JavaScript puros (sem framework, sem build)
-- [Vercel](https://vercel.com) para hospedagem e função serverless
-- [n8n](https://n8n.io) recebendo os cadastros da lista de espera
+Esta é a **landing page de pré-lançamento** da Kerdos Finance. Ela é a porta de entrada de um **projeto futuro**: o produto ainda está sendo desenvolvido e, por enquanto, o site apresenta a proposta e reúne os interessados em uma **lista de espera**.
 
-## Estrutura
+Quer ser avisado quando abrir? Acesse **[kerdosfinance.com](https://www.kerdosfinance.com/)** e entre na lista.
 
-```
-├── index.html          # redireciona para pages/home.html
-├── pages/home.html     # a landing
-├── styles/             # CSS (core + componentes)
-├── scripts/            # JS (core + componentes)
-├── assets/             # fontes, ícones e imagens
-├── api/waitlist.js     # função serverless da lista de espera
-└── vercel.json         # headers de segurança
-```
+## 🤖 Os três agentes
 
-## Rodando localmente
+A Kerdos funciona com três agentes, cada um cuidando de uma parte da sua vida financeira:
 
-Não precisa instalar nada. Basta servir a pasta:
+| Agente | Papel | O que faz |
+| --- | --- | --- |
+| **Voithos** | Dia a dia | Registra gastos enviados por texto, áudio, foto ou PDF do comprovante e coloca cada um na categoria certa. |
+| **Argos** | Análise | Acompanha seus padrões de gasto e avisa quando algo sai da curva, com contexto e uma ação clara. |
+| **Plutos** | Educação | Uma trilha para aprender o básico de investimentos antes de investir, de "o que é uma ação" até renda fixa. |
 
-```bash
-npx serve .
-```
+## 🔒 Segurança e privacidade
 
-Para testar também a lista de espera (`/api/waitlist`), use a CLI da Vercel:
+- Dados criptografados em trânsito e em repouso
+- Conexão com bancos somente leitura: a Kerdos nunca movimenta dinheiro
+- Em conformidade com a LGPD: você pode pedir cópia ou exclusão dos seus dados
 
-```bash
-npx vercel dev
-```
+## 🛠️ Como a landing foi feita
+
+- **HTML, CSS e JavaScript puros**, sem framework e sem etapa de build
+- **Vercel** para hospedagem e para a função que recebe a lista de espera
+- **n8n** para processar os cadastros
 
 ---
 
-Feito por **Davi Freitas**.
+<div align="center">
+
+Feito por **Davi Freitas**, **Felipe Cascaioli** e **Nathan Rezende**.
+
+</div>
