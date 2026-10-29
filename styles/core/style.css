@@ -1019,11 +1019,10 @@ h2 .accent { color: var(--brand-display); }
 /* ══ UPGRADE TOAST ══ */
 .upgrade-toast {
   position: fixed;
+  /* PC: canto inferior direito. No celular ele centraliza (ver media
+     query no fim deste bloco). */
   bottom: 28px;
-  /* Centralizado com left/right 0 + margin auto, e não translateX(-50%):
-     o transform já é da animação de entrada/saída. */
-  left: 0; right: 0;
-  margin-inline: auto;
+  right: 28px;
   transform: translateY(calc(100% + 60px));
   z-index: 4000;
   width: max-content;
@@ -1070,7 +1069,7 @@ h2 .accent { color: var(--brand-display); }
   transition: transform 0.4s cubic-bezier(0.4,0,1,1), opacity 0.3s;
 }
 .upgrade-toast-content { flex: 1; }
-.upgrade-toast-title { font-size: 13.5px; font-weight: 600; color: var(--white); margin-bottom: 3px; }
+.upgrade-toast-title { font-size: 13.5px; font-weight: 600; color: var(--white); white-space: nowrap; }
 .upgrade-toast-btn {
   font-size: 13px; font-weight: 600;
   color: var(--on-brand); background: var(--gold);
@@ -1097,20 +1096,19 @@ h2 .accent { color: var(--brand-display); }
 .upgrade-toast-close::after { content: ''; position: absolute; inset: -10px; }
 .upgrade-toast-close svg { width: 10px; height: 10px; stroke: var(--muted); fill: none; stroke-width: 2.2; stroke-linecap: round; }
 
-/* Mobile: uma faixa compacta — título e botão na mesma linha, com o
-   X dentro do fluxo (não flutuando por cima do botão). */
-@media (max-width: 600px) {
+/* Celular: pílula compacta, do tamanho do conteúdo, centralizada.
+   Centraliza com left/right 0 + margin auto, e não translateX(-50%):
+   o transform já é da animação de entrada/saída. */
+@media (max-width: 768px) {
   .upgrade-toast {
-    left: 16px; right: 16px;
+    left: 0; right: 0;
+    margin-inline: auto;
     bottom: calc(16px + env(safe-area-inset-bottom, 0px));
-    width: auto;
-    gap: 10px;
+    gap: 12px;
     padding: 10px 10px 10px 16px;
     border-radius: 14px;
   }
-  .upgrade-toast-content { flex: 1; min-width: 0; }
-  .upgrade-toast-title { font-size: 13.5px; margin-bottom: 0; white-space: nowrap; }
-  .upgrade-toast-btn { padding: 8px 14px; font-size: 13px; border-radius: 9px; }
+  .upgrade-toast-btn { padding: 9px 16px; font-size: 13px; border-radius: 9px; }
 }
 
 /* ── Scroll indicator ── */
