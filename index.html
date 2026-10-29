@@ -1,11 +1,1516 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-BR" data-theme="dark">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Kerdos Finance</title>
-  <link rel="canonical" href="https://kerdos.com.br/pages/home.html">
-  <meta http-equiv="refresh" content="0; url=pages/home.html">
-  <script>location.replace('pages/home.html');</script>
+  <!-- Metadados de busca e de compartilhamento. O produto vive no
+       WhatsApp, então o link da landing é colado em conversa o tempo
+       todo: sem og:* ele chega como uma URL crua, sem título nem imagem.
+       og:image precisa de URL absoluta (os crawlers não resolvem
+       caminho relativo) e de 1200×630, a proporção que WhatsApp,
+       LinkedIn e X recortam sem cortar o texto. -->
+  <meta name="description" content="Mande uma mensagem dizendo quanto gastou. A Kerdos anota, organiza e avisa quando o mês começar a sair do trilho. Funciona no WhatsApp, sem baixar nada.">
+  <link rel="canonical" href="https://kerdos.com.br/">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="pt_BR">
+  <meta property="og:site_name" content="Kerdos Finance">
+  <meta property="og:url" content="https://kerdos.com.br/">
+  <meta property="og:title" content="Kerdos Finance · Suas finanças, por conversa">
+  <meta property="og:description" content="Mande uma mensagem dizendo quanto gastou. A Kerdos anota, organiza e avisa quando o mês começar a sair do trilho.">
+  <meta property="og:image" content="https://kerdos.com.br/assets/og-kerdos.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Kerdos Finance: suas finanças, por conversa">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Kerdos Finance · Suas finanças, por conversa">
+  <meta name="twitter:description" content="Mande uma mensagem dizendo quanto gastou. A Kerdos anota, organiza e avisa quando o mês começar a sair do trilho.">
+  <meta name="twitter:image" content="https://kerdos.com.br/assets/og-kerdos.png">
+  <meta property="og:image:type" content="image/png">
+  <meta name="robots" content="index, follow, max-image-preview:large">
+  <!-- Tema único: escuro (preto e dourado), com o sistema em claro ou escuro. -->
+  <meta name="theme-color" content="#0C0C0B">
+  <meta name="color-scheme" content="dark">
+  <link rel="alternate" type="text/plain" href="https://kerdos.com.br/llms.txt" title="llms.txt">
+  <!-- Dados estruturados (schema.org). Descrevem só o que a página
+       mostra: empresa, site e o produto em pré-lançamento. Sem preço
+       nem avaliação, porque ainda não existem. -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Organization",
+        "@id": "https://kerdos.com.br/#org",
+        "name": "Kerdos Finance",
+        "url": "https://kerdos.com.br/",
+        "logo": "https://kerdos.com.br/assets/icone-180.png",
+        "email": "kerdosfinance@gmail.com",
+        "founder": [
+          { "@type": "Person", "name": "Nathan Dias Rezende" },
+          { "@type": "Person", "name": "Felipe Cascaioli de Moraes" },
+          { "@type": "Person", "name": "Davi Ferreira Freitas" }
+        ]
+      },
+      {
+        "@type": "WebSite",
+        "@id": "https://kerdos.com.br/#site",
+        "name": "Kerdos Finance",
+        "url": "https://kerdos.com.br/",
+        "inLanguage": "pt-BR",
+        "publisher": { "@id": "https://kerdos.com.br/#org" }
+      },
+      {
+        "@type": "SoftwareApplication",
+        "name": "Kerdos Finance",
+        "applicationCategory": "FinanceApplication",
+        "operatingSystem": "WhatsApp",
+        "description": "Assistente financeiro por conversa no WhatsApp. Registra gastos por texto, áudio, foto ou PDF, avisa quando o mês sai do trilho e ensina o básico de investimentos.",
+        "inLanguage": "pt-BR",
+        "publisher": { "@id": "https://kerdos.com.br/#org" }
+      }
+    ]
+  }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300..700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles/core/theme.css">
+  <link rel="stylesheet" href="styles/components/navbar.css">
+  <!-- Opt-out das View Transitions entre páginas (evita o loader esmaecido no cross-fade) -->
+  <style>@view-transition { navigation: none; }</style>
+  <link rel="stylesheet" href="styles/core/style.css">
+  <link rel="stylesheet" href="styles/components/lista-espera.css">
+  <link rel="stylesheet" href="styles/core/scrollbar.css">
+  <!-- Nenhum script bloqueia o <head>: todos são defer e rodam em ordem
+       depois do HTML (format.js antes de how-it-works.js, que usa ele). -->
+  <script src="scripts/core/format.js" defer></script>
+  <script src="scripts/components/cursor.js" defer></script>
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/icone-32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="assets/icone-16.png">
+  <link rel="apple-touch-icon" href="assets/icone-180.png">
 </head>
-<body></body>
-</html>
+<body class="sem-scrollbar">
+
+<!-- LOADER / INTRO — #loader injetado por app-loader.js, sincrono e no
+     topo do body para cobrir a pagina desde o primeiro paint. Some
+     1,8s depois do load (mesmo timing das demais paginas). -->
+<script src="scripts/components/app-loader.js"></script>
+
+<!-- BG ORBS -->
+<div id="bg-orbs">
+  <div class="orb orb-a"></div>
+  <div class="orb orb-b"></div>
+  <div class="orb orb-c"></div>
+</div>
+
+<!-- NAVBAR — pré-lançamento: só o wordmark. Os links (Agentes, Sobre
+     nós, Planos, Entrar e os agentes do estado logado) saíram da landing
+     enquanto o cadastro está fechado; quem já tem conta entra pelo botão
+     do hero, que vira "Abrir o app". Ao rolar, a pill encolhe e o
+     wordmark assenta no centro da tela (ver nav.nav-minimal em
+     styles/components/navbar.css). -->
+<nav class="nav-minimal">
+  <a href="/" class="nav-logo" aria-label="Kerdos — ir para a home">
+    <svg class="nav-wordmark-svg" viewBox="0 0 149 31" fill="currentColor" role="img" aria-label="Kerdos" xmlns="http://www.w3.org/2000/svg">
+      <path d="M138.332 1.44043C140.225 1.44043 141.919 1.77377 143.412 2.44043C144.932 3.08043 146.118 4.04038 146.972 5.32031C147.852 6.57364 148.292 8.16011 148.292 10.0801V11.7598H144.972V10.0801C144.972 8.72008 144.678 7.62647 144.092 6.7998C143.532 5.97335 142.745 5.35993 141.732 4.95996C140.746 4.55997 139.612 4.36036 138.332 4.36035C136.492 4.36035 135.012 4.77294 133.892 5.59961C132.772 6.39961 132.212 7.54674 132.212 9.04004C132.212 10.0267 132.452 10.8271 132.932 11.4404C133.412 12.0537 134.092 12.56 134.972 12.96C135.852 13.3333 136.905 13.6666 138.132 13.96L140.212 14.4805C141.839 14.8271 143.292 15.3066 144.572 15.9199C145.879 16.5066 146.919 17.3204 147.692 18.3604C148.466 19.3736 148.852 20.7072 148.852 22.3604C148.852 24.0134 148.439 25.4532 147.612 26.6797C146.786 27.9064 145.612 28.8662 144.092 29.5596C142.598 30.2262 140.838 30.5596 138.812 30.5596C136.785 30.5595 134.972 30.2003 133.372 29.4805C131.772 28.7605 130.506 27.6801 129.572 26.2402C128.666 24.7736 128.212 22.9464 128.212 20.7598V19.9199H131.532V20.7598C131.532 23.0798 132.212 24.8133 133.572 25.96C134.932 27.0798 136.678 27.6396 138.812 27.6396C140.998 27.6396 142.665 27.1466 143.812 26.1602C144.958 25.1736 145.532 23.9336 145.532 22.4404C145.532 21.4005 145.266 20.5733 144.732 19.96C144.226 19.3467 143.505 18.8538 142.572 18.4805C141.639 18.0805 140.545 17.7338 139.292 17.4404L137.212 16.9199C135.585 16.4933 134.145 15.9737 132.892 15.3604C131.638 14.747 130.652 13.9466 129.932 12.96C129.238 11.9467 128.892 10.6533 128.892 9.08008C128.892 7.50679 129.278 6.14664 130.052 5C130.852 3.85335 131.959 2.97368 133.372 2.36035C134.812 1.74702 136.465 1.44043 138.332 1.44043Z"/>
+      <path d="M3.35938 14.2002H3.91992L15.7598 2H20.2402L6.59961 15.8398L20.7197 30H16.1201L3.91992 17.5596H3.35938V30H0V2H3.35938V14.2002Z"/>
+      <path d="M41.6543 5.04004H27.7734V14.4004H40.5342V17.4404H27.7734V26.96H41.8535V30H24.4141V2H41.6543V5.04004Z"/>
+      <path fill-rule="evenodd" clip-rule="evenodd" d="M58.2725 2C60.0058 2 61.5263 2.30659 62.833 2.91992C64.1663 3.50659 65.2065 4.36048 65.9531 5.48047C66.6996 6.57372 67.0732 7.89396 67.0732 9.44043V9.87988C67.0732 11.7199 66.6329 13.1736 65.7529 14.2402C64.873 15.3068 63.8328 16.0271 62.6328 16.4004V16.96C63.5928 16.9866 64.3798 17.3066 64.9932 17.9199C65.633 18.5065 65.9531 19.3999 65.9531 20.5996V30H62.6328V21C62.6328 20.2001 62.4063 19.5868 61.9531 19.1602C61.5265 18.7335 60.873 18.5196 59.9932 18.5195H50.3125V30H46.9531V2H58.2725ZM50.3125 15.4805H57.9531C59.793 15.4804 61.2067 15.0401 62.1934 14.1602C63.2065 13.2536 63.7128 12.0001 63.7129 10.4004V10.1201C63.7129 8.52036 63.2198 7.28037 62.2334 6.40039C61.2468 5.49376 59.8197 5.04007 57.9531 5.04004H50.3125V15.4805Z"/>
+      <path fill-rule="evenodd" clip-rule="evenodd" d="M81.7871 2C85.4671 2 88.3076 2.93314 90.3076 4.7998C92.3342 6.66647 93.3477 9.53377 93.3477 13.4004V18.5996C93.3477 22.4929 92.3342 25.3736 90.3076 27.2402C88.3076 29.0802 85.4671 30 81.7871 30H70.8672V27H74.7871V5H70.8672V2H81.7871ZM78.1475 26.96H81.7871C84.5071 26.96 86.5606 26.2933 87.9473 24.96C89.3339 23.6266 90.0273 21.5598 90.0273 18.7598V13.2803C90.0273 10.4269 89.3339 8.3467 87.9473 7.04004C86.5606 5.73337 84.5071 5.08008 81.7871 5.08008H78.1475V26.96Z"/>
+      <path d="M110.8 0C112.305 0 113.759 0.222176 115.13 0.634766L113.593 4.30371C112.701 4.0714 111.765 3.94727 110.8 3.94727C104.696 3.94727 99.7471 8.8958 99.7471 15C99.7471 19.8906 102.924 24.0388 107.326 25.4951V30H98.7998V26.6846H101.394C97.9825 23.9351 95.7998 19.7223 95.7998 15C95.7998 6.71573 102.516 4.51009e-07 110.8 0Z"/>
+      <path d="M119.021 2.45215C123.104 5.13255 125.8 9.75151 125.8 15C125.8 19.7223 123.618 23.9351 120.207 26.6846H123.115V30H114.432V25.4414C118.752 23.9389 121.853 19.8319 121.853 15C121.853 11.3973 120.129 8.19747 117.461 6.17969L119.021 2.45215Z"/>
+    </svg>
+  </a>
+
+</nav>
+
+<!-- ═══ HERO ═══ -->
+<section class="hero">
+
+  <!-- LEFT: copy + chat -->
+  <div class="hero-content">
+
+    <h1>Pare de perder<br><span class="accent"><span id="tw-word">controle</span><span class="tw-cursor">.</span></span></h1>
+
+    <p class="hero-sub">
+      Você manda uma mensagem. O Voithos anota, o Argos enxerga o mês inteiro e o Plutos faz seu dinheiro trabalhar por você.
+    </p>
+
+    <div class="hero-trust">
+      <div class="hero-trust-item">
+        <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+        <span>Funciona no WhatsApp, sem baixar nada</span>
+      </div>
+      <div class="hero-trust-item">
+        <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+        <span>Registre gastos por texto, áudio, foto ou PDF do comprovante</span>
+      </div>
+      <div class="hero-trust-item">
+        <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+        <span>Alertas em tempo real quando algo fugir do padrão</span>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- RIGHT: phone mockup -->
+  <div class="hero-visual">
+    <div class="phone-wrap">
+
+      <!-- Argos floating card -->
+      <div class="float-card alert-card">
+        <div class="alert-header">
+          <div class="alert-tag-row">
+            <span class="alert-dot"></span>
+            <span class="alert-tag">Argos IA</span>
+          </div>
+          <span class="alert-badge">Alerta</span>
+        </div>
+        <div class="alert-title">Gasto incomum</div>
+        <div class="alert-sub">iFood: 3× acima do seu padrão semanal.</div>
+        <div class="alert-meta">
+          <span class="alert-meta-time">Agora mesmo</span>
+          <span class="alert-meta-val">&#x2212;<span data-brl="380" data-sem-centavos>R$ 380</span></span>
+        </div>
+      </div>
+
+      <!-- Phone — .device-stage holds the static drop-shadow; .device-mockup does the float (separated so the animated transform never rasterizes the filter → no blur) -->
+      <div class="device-stage">
+      <div class="device-mockup">
+        <div class="device-screen">
+
+        <!-- Status bar -->
+        <div class="phone-status">
+          <span class="phone-time-text">23:41</span>
+          <div class="phone-status-icons">
+            <!-- Cellular: 4 filled bars, bottom-aligned, increasing height -->
+            <svg class="ps-signal" width="18" height="12" viewBox="0 0 18 12" aria-hidden="true">
+              <rect x="0"  y="8"   width="3" height="4"   rx="0.6" fill="white"/>
+              <rect x="5"  y="5.5" width="3" height="6.5" rx="0.6" fill="white"/>
+              <rect x="10" y="3"   width="3" height="9"   rx="0.6" fill="white"/>
+              <rect x="15" y="0"   width="3" height="12"  rx="0.6" fill="white"/>
+            </svg>
+            <!-- WiFi: dot + 3 concentric arcs -->
+            <svg class="ps-wifi" width="16" height="13" viewBox="0 -1 16 13" fill="none" aria-hidden="true">
+              <circle cx="8" cy="11" r="1.3" fill="white"/>
+              <path d="M5.3 8.3 A3.8 3.8 0 0 1 10.7 8.3" stroke="white" stroke-width="1.35" stroke-linecap="round"/>
+              <path d="M2.5 5.7 A7.2 7.2 0 0 1 13.5 5.7" stroke="white" stroke-width="1.35" stroke-linecap="round"/>
+              <path d="M0   3   A10.5 10.5 0 0 1 16 3"   stroke="white" stroke-width="1.35" stroke-linecap="round"/>
+            </svg>
+            <!-- Battery: rounded body + nipple + ~85% fill -->
+            <svg class="ps-battery" width="27" height="12" viewBox="0 0 27 12" fill="none" aria-hidden="true">
+              <rect x="0.5" y="0.5" width="22" height="11" rx="3"   stroke="white" stroke-opacity="0.35"/>
+              <rect x="23"  y="3.5" width="2.5" height="5"  rx="1"  fill="white" fill-opacity="0.4"/>
+              <rect x="2"   y="2"   width="17"  height="8"  rx="1.5" fill="white"/>
+            </svg>
+          </div>
+        </div>
+
+        <!-- Platform toggle -->
+        <div class="phone-toggle">
+          <button class="phone-toggle-btn wa-active active" data-view="whatsapp">
+            <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            WhatsApp
+          </button>
+          <button class="phone-toggle-btn" data-view="telegram">
+            <svg viewBox="0 0 24 24"><path d="M21.198 2.433a2.242 2.242 0 0 0-1.022.215l-16.5 6.972c-.97.41-.944 1.76.046 2.124l3.935 1.46 1.52 4.944c.198.645.93.894 1.46.507l2.18-1.596 3.917 2.93c.554.415 1.345.134 1.524-.52l3.024-14.974c.19-.942-.687-1.766-1.084-2.062z"/></svg>
+            Telegram
+          </button>
+          <button class="phone-toggle-btn" data-view="kerdos">
+            <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            Kerdos App
+          </button>
+        </div>
+
+        <!-- ── Views sliding track ── -->
+        <div class="phone-views-track">
+
+        <!-- ── WhatsApp view ── -->
+        <div class="phone-view" id="phone-view-whatsapp">
+          <div class="wa-header">
+            <span class="wa-back">&#8592;</span>
+            <div class="wa-avatar">V</div>
+            <div class="wa-info">
+              <div class="wa-name">Voithos · Kerdos Finance</div>
+              <div class="wa-status">online</div>
+            </div>
+            <div class="wa-header-icons">
+              <svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.41 2 2 0 0 1 3.6 1.24h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L7.91 8.84a16 16 0 0 0 6 6l.86-.86a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 21.5 16.92z"/></svg>
+              <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
+            </div>
+          </div>
+          <!-- Conversation is built/looped by JS; this is the no-JS fallback -->
+          <div class="wa-messages">
+            <div class="wa-msg wa-msg-user is-in">
+              <div class="wa-bubble">gastei 120 no mercado hoje<span class="bubble-meta">08:45</span></div>
+            </div>
+            <div class="wa-msg wa-msg-bot is-in">
+              <div class="wa-bubble"><span class="bot-name">Voithos</span>Boa, já registrei! ✅ Mercado tá sendo sua maior categoria esse mês.<span class="bubble-meta">08:45</span></div>
+            </div>
+          </div>
+          <div class="wa-input-bar">
+            <div class="wa-input-pill">Mensagem</div>
+            <div class="wa-send-btn">
+              <svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── Telegram view ── -->
+        <div class="phone-view" id="phone-view-telegram">
+          <div class="tg-header">
+            <span class="tg-back">&#8592;</span>
+            <div class="tg-avatar">V</div>
+            <div class="tg-info">
+              <div class="tg-name">Voithos · Kerdos Finance</div>
+              <div class="tg-status">online</div>
+            </div>
+            <div class="tg-header-icons">
+              <svg viewBox="0 0 24 24"><path d="M15.05 5A5 5 0 0 1 19 8.95M15.05 1A9 9 0 0 1 23 8.94m-1 7.98v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.41 2 2 0 0 1 3.6 1.24h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L7.91 8.84a16 16 0 0 0 6 6l.86-.86a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+              <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
+            </div>
+          </div>
+          <!-- Conversation is built/looped by JS; this is the no-JS fallback -->
+          <div class="tg-messages">
+            <div class="tg-msg tg-msg-user is-in">
+              <div class="tg-bubble">registra 85 no almoço<span class="bubble-meta">13:02</span></div>
+            </div>
+            <div class="tg-msg tg-msg-bot is-in">
+              <div class="tg-bubble"><span class="bot-name">Voithos</span>Anotado! 🍽️ Alimentação já é sua 2ª maior categoria este mês.<span class="bubble-meta">13:02</span></div>
+            </div>
+          </div>
+          <div class="tg-input-bar">
+            <div class="tg-input-pill">Mensagem</div>
+            <div class="tg-send-btn">
+              <svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── Kerdos App view ── -->
+        <div class="phone-view" id="phone-view-kerdos">
+          <div class="kerdos-header">
+            <div class="kerdos-av">V</div>
+            <div class="kerdos-hd-info">
+              <div class="kerdos-hd-name">Voithos — Kerdos Finance</div>
+              <div class="kerdos-hd-online"><span class="kerdos-hd-dot"></span>online agora</div>
+            </div>
+          </div>
+          <!-- Conversation is built/looped by JS; this is the no-JS fallback -->
+          <div class="kerdos-msgs">
+            <div class="km km-user is-in">
+              <div class="km-bubble">tô gastando muito?<span class="bubble-meta">22:15</span></div>
+            </div>
+            <div class="km km-bot is-in">
+              <div class="km-bubble"><span class="bot-name">Voithos</span>Um pouco. Você já passou 30% do padrão da semana, e ainda é quarta.<span class="bubble-meta">22:15</span></div>
+            </div>
+          </div>
+          <div class="kerdos-input">
+            <div class="kerdos-input-pill">Manda uma mensagem…</div>
+            <div class="kerdos-send">
+              <svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+            </div>
+          </div>
+        </div>
+
+        </div><!-- /.phone-views-track -->
+
+        <!-- Home indicator (iOS) -->
+        <div class="phone-home" aria-hidden="true"></div>
+
+        </div><!-- /.device-screen -->
+        <img class="device-shell" src="assets/iphone-frame.webp" width="1200" height="2265" fetchpriority="high" decoding="async" alt="" aria-hidden="true" draggable="false">
+      </div><!-- /.device-mockup -->
+      </div><!-- /.device-stage -->
+
+      <!-- Plutos floating card -->
+      <div class="float-card stock-card">
+        <div class="stock-header">
+          <span class="stock-tag">Plutos</span>
+          <span class="stock-live"><span class="stock-live-dot"></span>Ao vivo</span>
+        </div>
+        <div class="stock-ticker-row">
+          <span class="stock-ticker">PETR4</span>
+          <span class="stock-pct" data-percent="2.4">+2,4%</span>
+        </div>
+        <div class="stock-price"><span data-brl="38.72">R$ 38,72</span> · B3</div>
+        <div class="stock-bar-track"><div class="stock-bar-fill"></div></div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="scroll-indicator">
+    <span>Role para explorar</span>
+    <div class="scroll-arrow">↓</div>
+  </div>
+
+</section>
+
+<!-- ═══ COMO FUNCIONA ═══ -->
+<section id="como-funciona" class="hiw-section">
+  <div class="hiw-orb hiw-orb-1" id="hiw-orb-1"></div>
+  <div class="hiw-orb hiw-orb-2" id="hiw-orb-2"></div>
+
+  <div class="hiw-container">
+
+    <header class="hiw-header" id="hiw-header">
+      <div class="hiw-eyebrow">Como funciona</div>
+      <h2 class="hiw-heading">Quatro momentos. Um mentor.</h2>
+      <p class="hiw-sub">Do primeiro gasto anotado ao primeiro investimento que você entende de verdade.</p>
+    </header>
+
+    <div class="hiw-grid">
+
+      <!-- Unit 1 — Voithos conversation -->
+      <div class="hiw-unit">
+        <div class="hiw-card" id="hiw-card-1">
+          <div class="hiw-card-inner">
+            <!-- Réplica em miniatura da tela de chat do Voithos (views/voithos.tmpl).
+                 O card antigo era um mockup de mensageiro — avatar "V", "online",
+                 bolha dourada — e nada daquilo existe no produto: o app não usa
+                 bolha, a resposta vem com o símbolo Ω, o rótulo dourado e texto
+                 corrido, e o que pisca enquanto ele pensa é o próprio Ω.
+                 Os dois <path> abaixo são os mesmos bytes de VT_SYMBOL_PATHS
+                 (scripts/agents/voithos/voithos.js) e da máscara em
+                 styles/agents/marca-voithos.css — se o símbolo mudar lá, muda aqui.
+                 Tudo é ilustração: nenhum <input>, nada focável, aria-hidden. -->
+            <div class="hiw-vt-app" aria-hidden="true">
+
+              <div class="hiw-vt-topbar">
+                <svg class="hiw-vt-glyph" viewBox="0 0 30 30" fill="currentColor"><path d="M15 0C16.5053 0 17.9588 0.221919 19.3296 0.634509L17.7931 4.3034C16.9009 4.07109 15.9649 3.94737 15 3.94737C8.8958 3.94737 3.94737 8.8958 3.94737 15C3.94737 19.8907 7.12392 24.0393 11.5263 25.4955V30H3V26.6842H5.59339C2.18233 23.9347 0 19.7223 0 15C0 6.71573 6.71573 0 15 0Z"/><path d="M23.2221 2.4523C27.3044 5.13271 30 9.75151 30 15C30 19.7223 27.8178 23.9348 24.4068 26.6842H27.3158V30H18.6316V25.4419C22.9518 23.9395 26.0526 19.832 26.0526 15C26.0526 11.3973 24.3288 8.19742 21.6612 6.17964L23.2221 2.4523Z"/></svg>
+                <span class="hiw-vt-agent">Voithos</span>
+              </div>
+
+              <div class="hiw-vt-thread">
+
+                <div class="hiw-vt-msg hiw-vt-msg-user" id="hiw-b1">gastei 38 no almoço no débito do itaú</div>
+
+                <!-- Uma só mensagem do bot: o Ω desenhando dá lugar ao texto
+                     no mesmo bloco, como no app. Dois elementos separados
+                     deixariam um buraco no fio quando o "pensando" apagasse. -->
+                <div class="hiw-vt-msg hiw-vt-msg-bot" id="hiw-b2">
+                  <div class="hiw-vt-avatar"><svg viewBox="0 0 30 30" fill="currentColor"><path d="M15 0C16.5053 0 17.9588 0.221919 19.3296 0.634509L17.7931 4.3034C16.9009 4.07109 15.9649 3.94737 15 3.94737C8.8958 3.94737 3.94737 8.8958 3.94737 15C3.94737 19.8907 7.12392 24.0393 11.5263 25.4955V30H3V26.6842H5.59339C2.18233 23.9347 0 19.7223 0 15C0 6.71573 6.71573 0 15 0Z"/><path d="M23.2221 2.4523C27.3044 5.13271 30 9.75151 30 15C30 19.7223 27.8178 23.9348 24.4068 26.6842H27.3158V30H18.6316V25.4419C22.9518 23.9395 26.0526 19.832 26.0526 15C26.0526 11.3973 24.3288 8.19742 21.6612 6.17964L23.2221 2.4523Z"/></svg></div>
+                  <div class="hiw-vt-body">
+                    <div class="hiw-vt-label">Voithos</div>
+                    <div class="hiw-vt-mark" id="hiw-typing">
+                      <svg viewBox="0 0 30 30" fill="currentColor">
+                        <!-- #fff aqui é canal de máscara, não cor de tema. -->
+                        <mask id="hiw-vt-reveal"><circle cx="15" cy="15" r="13" fill="none" stroke="#fff" stroke-width="6.5" transform="rotate(-90 15 15)"/></mask>
+                        <g mask="url(#hiw-vt-reveal)"><path d="M15 0C16.5053 0 17.9588 0.221919 19.3296 0.634509L17.7931 4.3034C16.9009 4.07109 15.9649 3.94737 15 3.94737C8.8958 3.94737 3.94737 8.8958 3.94737 15C3.94737 19.8907 7.12392 24.0393 11.5263 25.4955V30H3V26.6842H5.59339C2.18233 23.9347 0 19.7223 0 15C0 6.71573 6.71573 0 15 0Z"/><path d="M23.2221 2.4523C27.3044 5.13271 30 9.75151 30 15C30 19.7223 27.8178 23.9348 24.4068 26.6842H27.3158V30H18.6316V25.4419C22.9518 23.9395 26.0526 19.832 26.0526 15C26.0526 11.3973 24.3288 8.19742 21.6612 6.17964L23.2221 2.4523Z"/></g>
+                      </svg>
+                    </div>
+                    <div class="hiw-vt-text" id="hiw-answer">Anotado: <span data-brl="38" data-sem-centavos>R$&nbsp;38</span> em Alimentação, débito Itaú. Já é o 4º almoço fora nesta semana, <span data-brl="152" data-sem-centavos>R$&nbsp;152</span> no total. Quer ver o padrão?</div>
+                  </div>
+                </div>
+
+              </div>
+
+              <div class="hiw-vt-inputbar">
+                <span class="hiw-vt-placeholder">Pergunte algo ao Voithos...</span>
+                <span class="hiw-vt-voice">
+                  <svg viewBox="0 0 24 24"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+                  Voz
+                </span>
+                <span class="hiw-vt-send">
+                  <svg viewBox="0 0 24 24"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg>
+                </span>
+              </div>
+
+            </div>
+          </div>
+        </div>
+        <div class="hiw-caption">
+          <div class="hiw-cap-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><circle cx="9" cy="10" r="0.6" fill="currentColor"/><circle cx="12" cy="10" r="0.6" fill="currentColor"/><circle cx="15" cy="10" r="0.6" fill="currentColor"/></svg>
+            Escreva do jeito que você fala
+          </div>
+          <p>Manda pro Voithos um "gastei 38 no almoço", um áudio, a foto do comprovante ou o PDF da nota. Ele lê, entende, coloca na categoria certa e responde em uma linha.</p>
+        </div>
+      </div>
+
+      <!-- Unit 2 — Argos eye -->
+      <div class="hiw-unit">
+        <div class="hiw-card" id="hiw-card-2">
+          <div class="hiw-card-inner">
+            <div class="argos-holo" aria-label="Painel holográfico ilustrativo do agente Argos" aria-hidden="true">
+
+              <!-- Connector lines -->
+              <svg class="argos-connectors" viewBox="0 0 300 260" preserveAspectRatio="none" aria-hidden="true">
+                <path class="argos-conn argos-conn-1" d="M 232 56 L 254 34" stroke="rgba(228,156,0,0.3)" stroke-width="1" fill="none"/>
+                <path class="argos-conn argos-conn-2" d="M 68 204 L 50 226" stroke="rgba(228,156,0,0.3)" stroke-width="1" fill="none"/>
+              </svg>
+
+              <!-- Central panel — bar chart -->
+              <div class="argos-panel">
+                <div class="argos-panel-hdr">GASTOS · ÚLTIMOS 30 DIAS</div>
+                <span class="argos-corner argos-corner-tl" aria-hidden="true"></span>
+                <span class="argos-corner argos-corner-tr" aria-hidden="true"></span>
+                <span class="argos-corner argos-corner-bl" aria-hidden="true"></span>
+                <span class="argos-corner argos-corner-br" aria-hidden="true"></span>
+                <div class="argos-bars" aria-hidden="true">
+                  <div class="argos-bar-row">
+                    <span class="argos-bar-label">iFood</span>
+                    <div class="argos-bar-track"><div class="argos-bar" style="width:88%"></div></div>
+                    <span class="argos-bar-val" data-brl="420" data-sem-centavos>R$&nbsp;420</span>
+                  </div>
+                  <div class="argos-bar-row">
+                    <span class="argos-bar-label">Uber</span>
+                    <div class="argos-bar-track"><div class="argos-bar" style="width:38%"></div></div>
+                    <span class="argos-bar-val" data-brl="180" data-sem-centavos>R$&nbsp;180</span>
+                  </div>
+                  <div class="argos-bar-row">
+                    <span class="argos-bar-label">Mercado</span>
+                    <div class="argos-bar-track"><div class="argos-bar" style="width:65%"></div></div>
+                    <span class="argos-bar-val" data-brl="310" data-sem-centavos>R$&nbsp;310</span>
+                  </div>
+                  <div class="argos-bar-row">
+                    <span class="argos-bar-label">Streaming</span>
+                    <div class="argos-bar-track"><div class="argos-bar" style="width:16%"></div></div>
+                    <span class="argos-bar-val" data-brl="75" data-sem-centavos>R$&nbsp;75</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Satellite 1 — variation indicator (top right) -->
+              <div class="argos-sat argos-sat-1" aria-hidden="true">
+                <span class="argos-sat-num" id="argos-pct" data-percent="24">+24%</span>
+                <span class="argos-sat-sub">vs mês anterior</span>
+              </div>
+
+              <!-- Satellite 2 — anomaly alert (bottom left) -->
+              <div class="argos-sat argos-sat-2" aria-hidden="true">
+                <div class="argos-sat-row">
+                  <span class="argos-pulse-dot"></span>
+                  <span class="argos-sat-tag">PADRÃO ATÍPICO</span>
+                </div>
+                <span class="argos-sat-detail">iFood +3x</span>
+              </div>
+
+            </div>
+          </div>
+        </div>
+        <div class="hiw-caption">
+          <div class="hiw-cap-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            Argos vê o que você não vê
+          </div>
+          <p>Em segundo plano, o Argos estuda seus padrões de gasto e avisa quando algo sai da curva. Você fica sabendo antes de a fatura chegar.</p>
+        </div>
+      </div>
+
+      <!-- Unit 3 — Notification stack -->
+      <div class="hiw-unit">
+        <div class="hiw-card" id="hiw-card-3">
+          <div class="hiw-card-inner">
+            <div class="hiw-notif-stack">
+              <div class="hiw-notif hiw-notif-back">
+                <div class="hiw-notif-ph-title"></div>
+                <div class="hiw-notif-ph-line"></div>
+                <div class="hiw-notif-ph-line hiw-notif-ph-line-short"></div>
+              </div>
+              <div class="hiw-notif hiw-notif-front">
+                <div class="hiw-notif-hd">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+                  <span>ARGOS</span>
+                </div>
+                <div class="hiw-notif-title">iFood está pesado</div>
+                <div class="hiw-notif-body">3x mais que sua média mensal. Quer definir um teto de <span data-brl="200" data-sem-centavos>R$ 200</span>?</div>
+                <div class="hiw-notif-btns">
+                  <button class="hiw-nbtn-primary">Definir teto</button>
+                  <button class="hiw-nbtn-ghost">Agora não</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="hiw-caption">
+          <div class="hiw-cap-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+            Alertas que valem a pena ler
+          </div>
+          <p>Quando o Argos detecta algo, o Voithos te avisa com contexto e uma ação clara. Sem notificação inútil, sem terrorismo financeiro.</p>
+        </div>
+      </div>
+
+      <!-- Unit 4 — Plutos: a jornada do investidor -->
+      <div class="hiw-unit">
+        <div class="hiw-card" id="hiw-card-4">
+          <div class="hiw-card-inner">
+            <!-- Réplica do modo Aprender do Plutos (views/plutos.tmpl) — a aba
+                 que abre por padrão no app. O que morava aqui era o gráfico do
+                 modo Mercado, com cor literal cravada no SVG: a legenda promete
+                 "aprenda antes de apostar" e a ilustração mostrava cotação.
+                 Módulos, XP e resumos saem de plutos-data.js, sem inventar nada.
+                 Uma liberdade: no app o herói e a lista ficam empilhados na
+                 coluna da esquerda; aqui vão lado a lado, porque o card é largo
+                 e baixo. Os estados (is-concluida / is-atual / is-bloqueada) e
+                 os nomes de classe são os do app.
+                 Ilustração: nada aqui é clicável, aria-hidden. -->
+            <div class="hiw-pl-app" aria-hidden="true">
+
+              <div class="hiw-pl-topbar">
+                <span class="hiw-pl-nome">Plutos</span>
+                <span class="hiw-pl-pill">
+                  <svg class="hiw-pl-pill-ic" viewBox="0 0 24 24"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg>
+                  <span><strong>7</strong> dias de streak</span>
+                </span>
+                <span class="hiw-pl-pill hiw-pl-pill-xp">
+                  <svg class="hiw-pl-pill-ic" viewBox="0 0 24 24"><polygon points="12 2 15 9 22 9.5 16.5 14 18.5 21 12 17 5.5 21 7.5 14 2 9.5 9 9"/></svg>
+                  <span><strong id="hiw-pl-xp">230</strong> XP</span>
+                </span>
+              </div>
+
+              <div class="hiw-pl-corpo">
+
+                <!-- Herói: o módulo da vez. As duas faces ficam empilhadas na
+                     mesma célula do grid — a troca é um crossfade, e a altura
+                     não pula porque quem manda é a face mais alta. -->
+                <div class="hiw-pl-hero" id="hiw-pl-hero">
+                  <div class="hiw-pl-face hiw-pl-face-a">
+                    <span class="hiw-pl-eyebrow">Módulo 2 de 6 · Fundamentos</span>
+                    <h3 class="hiw-pl-titulo">Risco x Retorno</h3>
+                    <p class="hiw-pl-resumo">Por que todo retorno maior cobra um preço em incerteza, e como pesar os dois.</p>
+                    <div class="hiw-pl-rodape">
+                      <span class="hiw-pl-meta">90 XP · 80% para avançar</span>
+                      <span class="hiw-pl-cta">Começar</span>
+                    </div>
+                  </div>
+                  <div class="hiw-pl-face hiw-pl-face-b">
+                    <span class="hiw-pl-eyebrow">Módulo 3 de 6 · Fundamentos</span>
+                    <h3 class="hiw-pl-titulo">Entendendo volatilidade</h3>
+                    <p class="hiw-pl-resumo">O que significa um ativo oscilar muito, e quando isso é risco de verdade.</p>
+                    <div class="hiw-pl-rodape">
+                      <span class="hiw-pl-meta">100 XP · 80% para avançar</span>
+                      <span class="hiw-pl-cta">Começar</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="hiw-pl-jornada">
+                  <div class="hiw-pl-jornada-hd">
+                    <span class="hiw-pl-jornada-titulo">Sua jornada</span>
+                    <span class="hiw-pl-jornada-meta"><span id="hiw-pl-feitos">1</span> de 6</span>
+                  </div>
+                  <ol class="hiw-pl-lista">
+
+                    <li class="hiw-pl-mod is-concluida">
+                      <span class="hiw-pl-marca"><svg class="hiw-pl-check" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span>
+                      <span class="hiw-pl-mod-titulo">O que é uma ação?</span>
+                      <span class="hiw-pl-xp">85% · +120 XP</span>
+                    </li>
+
+                    <!-- Linha que conclui na animação: as duas leituras moram no
+                         DOM e a classe do <li> escolhe qual aparece. -->
+                    <li class="hiw-pl-mod is-atual" id="hiw-pl-mod2">
+                      <span class="hiw-pl-marca"><span class="hiw-pl-num">2</span><svg class="hiw-pl-check" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span>
+                      <span class="hiw-pl-mod-titulo">Risco x Retorno</span>
+                      <span class="hiw-pl-estado">Disponível</span>
+                      <span class="hiw-pl-xp">90% · +90 XP</span>
+                    </li>
+
+                    <!-- Linha que destrava: cadeado dá lugar ao número. -->
+                    <li class="hiw-pl-mod is-bloqueada" id="hiw-pl-mod3">
+                      <span class="hiw-pl-marca"><span class="hiw-pl-num">3</span></span>
+                      <span class="hiw-pl-mod-titulo">Entendendo volatilidade</span>
+                      <span class="hiw-pl-estado">Disponível</span>
+                      <span class="hiw-pl-cadeado"><svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span>
+                    </li>
+
+                    <li class="hiw-pl-mod is-bloqueada">
+                      <span class="hiw-pl-marca"><span class="hiw-pl-num">4</span></span>
+                      <span class="hiw-pl-mod-titulo">O que são Fiis?</span>
+                      <span class="hiw-pl-cadeado"><svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span>
+                    </li>
+
+                    <li class="hiw-pl-mod is-bloqueada">
+                      <span class="hiw-pl-marca"><span class="hiw-pl-num">5</span></span>
+                      <span class="hiw-pl-mod-titulo">Cripto sem mistério</span>
+                      <span class="hiw-pl-cadeado"><svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span>
+                    </li>
+
+                    <li class="hiw-pl-mod is-bloqueada">
+                      <span class="hiw-pl-marca"><span class="hiw-pl-num">6</span></span>
+                      <span class="hiw-pl-mod-titulo">Renda fixa na prática</span>
+                      <span class="hiw-pl-cadeado"><svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span>
+                    </li>
+
+                  </ol>
+                </div>
+
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="hiw-caption">
+          <div class="hiw-cap-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
+            Aprenda antes de apostar
+          </div>
+          <p>Seis módulos, do que é uma ação até renda fixa. O próximo só abre quando você acerta 80% do anterior. Investir sem entender é o caminho mais curto pra perder dinheiro.</p>
+        </div>
+      </div>
+
+    </div><!-- /.hiw-grid -->
+  </div><!-- /.hiw-container -->
+</section>
+
+<!-- ═══ SEGURANÇA ═══ -->
+<section class="security-section" id="security-section">
+
+  <div class="security-sticky">
+    <div class="security-sticky-inner">
+
+      <div class="security-header">
+        <span class="sec-eyebrow">SEGURANÇA</span>
+        <h2>Seus dados, <span class="accent">só seus.</span></h2>
+        <p class="security-subtitle">Seu dinheiro continua no seu banco. A gente só lê.</p>
+      </div>
+
+      <div class="security-diagram">
+
+        <!-- Bezier lines: start at lock edge, end 15px clear of branch text right/left edge -->
+        <svg class="diagram-lines" viewBox="0 0 1000 380" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path class="diagram-line line-1" d="M 400 195 C 368 168 340 86 285 54"   stroke="#E49C00" stroke-width="1" fill="none" stroke-linecap="round" opacity="0.45"/>
+          <path class="diagram-line line-2" d="M 600 200 C 632 184 662 158 715 140" stroke="#E49C00" stroke-width="1" fill="none" stroke-linecap="round" opacity="0.45"/>
+          <path class="diagram-line line-3" d="M 400 245 C 368 245 332 245 285 245" stroke="#E49C00" stroke-width="1" fill="none" stroke-linecap="round" opacity="0.45"/>
+          <path class="diagram-line line-4" d="M 600 252 C 632 262 665 278 715 285" stroke="#E49C00" stroke-width="1" fill="none" stroke-linecap="round" opacity="0.45"/>
+        </svg>
+
+        <!-- Lock — line-art, centered absolutely -->
+        <div class="lock-container">
+          <!-- Line-art em stroke 1.5, como todo o resto do line-art do projeto.
+               O corpo é uma COLUNA GREGA: capitel, fuste com estrias verticais e
+               base. A seção é sobre segurança numa fintech de narrativa grega —
+               o ícone carrega isso em vez de ser um cadeado de biblioteca.
+               Sem preenchimento, sem gradiente, sem sombra. A cor vem do CSS
+               (currentColor), então serve aos dois temas com o mesmo path. -->
+          <svg class="lock-svg" viewBox="0 0 100 130" xmlns="http://www.w3.org/2000/svg" aria-label="Cadeado em forma de coluna grega, ilustrativo de segurança" fill="none">
+            <g stroke="currentColor" stroke-width="1.5" fill="none"
+               stroke-linecap="round" stroke-linejoin="round">
+              <!-- Capitel e base: as duas lajes que fecham a coluna. Estreitas
+                   de propósito — capitel largo demais faz o conjunto ler como
+                   templo, não como cadeado. -->
+              <rect x="20" y="57" width="60" height="8" rx="1.5"/>
+              <rect x="20" y="105" width="60" height="8" rx="1.5"/>
+              <!-- Fuste -->
+              <path d="M 27 65 V 105 M 73 65 V 105"/>
+              <!-- Estrias: duas só, pra não disputar com o segredo -->
+              <path d="M 38 73 V 97 M 62 73 V 97"/>
+              <!-- Segredo -->
+              <circle cx="50" cy="79" r="4.5"/>
+              <path d="M 50 83.5 V 94"/>
+              <!-- Haste, mais estreita que o corpo (senão o conjunto lê como lanterna).
+                   Gira em .unlocked; o pivô no CSS acompanha o pé direito, 64,57. -->
+              <g class="lock-shackle">
+                <path d="M 36 57 V 42 A 14 14 0 0 1 64 42 V 57"/>
+              </g>
+            </g>
+          </svg>
+        </div>
+
+        <!-- Branch 1 — upper left, line-1 points here -->
+        <div class="branch branch-1">
+          <div class="branch-content">
+            <h3>Criptografia AES-256</h3>
+            <p>Seus dados trafegam e ficam guardados criptografados, no mesmo padrão usado pelos bancos.</p>
+          </div>
+        </div>
+
+        <!-- Branch 2 — right, mid height, line-2 points here -->
+        <div class="branch branch-2">
+          <div class="branch-content">
+            <h3>Somente leitura</h3>
+            <p>A conexão com seus bancos é só para visualizar. Nunca movemos seu dinheiro.</p>
+          </div>
+        </div>
+
+        <!-- Branch 3 — lower left, line-3 points here -->
+        <div class="branch branch-3">
+          <div class="branch-content">
+            <h3>Revogação instantânea</h3>
+            <p>Desconecte um banco quando quiser, com um clique. Os dados dele são apagados.</p>
+          </div>
+        </div>
+
+        <!-- Branch 4 — lower right, line-4 points here -->
+        <div class="branch branch-4">
+          <div class="branch-content">
+            <h3>Conformidade LGPD</h3>
+            <p>Peça uma cópia dos seus dados, ou a exclusão deles, quando quiser.</p>
+          </div>
+        </div>
+
+      </div><!-- /.security-diagram -->
+
+      <!-- Open Finance — inside sticky, fades in after lock opens -->
+      <div class="sec-of-outer">
+        <div class="open-finance-compact">
+          <div class="of-content">
+            <span class="of-eyebrow">EM BREVE · OPEN FINANCE</span>
+            <p>Em breve, o <strong>Open Finance</strong> conecta seu banco à Kerdos e seus gastos entram sozinhos, sem você precisar mandar cada um pro Voithos. Regulamentado pelo Banco Central, somente leitura e revogável a qualquer momento.</p>
+            <a href="https://openfinancebrasil.org.br/" target="_blank" rel="noopener" class="of-link">Saiba mais sobre Open Finance →</a>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /.security-sticky-inner -->
+  </div><!-- /.security-sticky -->
+
+</section>
+
+<!-- ═══ QUEM SOMOS ═══ -->
+<div id="quem-somos"></div>
+<div class="team-section">
+  <div class="team-header reveal">
+    <div class="section-tag">Quem somos</div>
+    <h2>Feito por quem<br><span class="accent">entende o problema.</span></h2>
+    <p class="section-lead">Três jovens que cansaram de ver o dinheiro sumir sem saber para onde. Resolvemos construir a solução.</p>
+  </div>
+  <div class="team-carousel" id="team-carousel">
+    <div class="team-carousel-track" id="team-track">
+
+      <div class="team-card" data-index="0">
+        <div class="team-photo"><div class="photo-placeholder"><div class="photo-circle"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div><span class="photo-label">Foto em breve</span></div></div>
+        <div class="team-info">
+          <div class="team-name">Nathan Dias Rezende</div>
+          <div class="team-meta"><span class="team-age">17 anos</span><span class="team-badge">Co-founder</span></div>
+          <div class="team-expand-hint"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>Ver mais</div>
+        </div>
+        <div class="team-card-bio">
+          <p>Designer e desenvolvedor front-end. Comecei pelo visual e só depois migrei pro código, então sempre enxerguei interface como a parte do produto que decide se a pessoa fica ou desiste. Sempre achei absurdo que os apps financeiros entregassem a ferramenta e largassem o usuário sozinho com ela, cheios de telas densas, termos que ninguém explica e zero pedagogia, principalmente pra quem está ganhando o primeiro dinheiro e não sabe por onde começar.</p>
+          <p style="margin-top: 12px;">Na Kerdos, sou responsável por tudo que você vê e toca: a identidade visual, a experiência e o front-end que dão corpo ao <strong>Voithos</strong>, ao <strong>Argos</strong> e ao <strong>Plutos</strong>. Cada tela é desenhada no Figma antes de virar código, com uma regra simples: onde der pra executar pelo usuário ou ensinar o usuário a executar, a gente ensina. Interface sóbria, premium e com cara de produto de tecnologia, não de fintech colorida.</p>
+          <p style="margin-top: 12px;">Aos 17 anos, já com a Kerdos saindo do papel e virando código, meu propósito aqui é fazer finanças parecerem simples e acessíveis, sem esconder que a pessoa está aprendendo algo importante. Design que trabalha pra você, não o contrário.</p>
+        </div>
+      </div>
+
+      <div class="team-card" data-index="1">
+        <div class="team-photo"><div class="photo-placeholder"><div class="photo-circle"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div><span class="photo-label">Foto em breve</span></div></div>
+        <div class="team-info">
+          <div class="team-name">Felipe Cascaioli de Moraes</div>
+          <div class="team-meta"><span class="team-age">18 anos</span><span class="team-badge">Co-founder</span></div>
+          <div class="team-expand-hint"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>Ver mais</div>
+        </div>
+        <div class="team-card-bio">
+          <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</p>
+        </div>
+      </div>
+
+      <div class="team-card" data-index="2">
+        <div class="team-photo"><div class="photo-placeholder"><div class="photo-circle"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div><span class="photo-label">Foto em breve</span></div></div>
+        <div class="team-info">
+          <div class="team-name">Davi Ferreira Freitas</div>
+          <div class="team-meta"><span class="team-age">18 anos</span><span class="team-badge">Co-founder</span></div>
+          <div class="team-expand-hint"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>Ver mais</div>
+        </div>
+        <div class="team-card-bio">
+          <p>Engenheiro de Software e especialista em Inteligência Artificial em produção. Sempre achei um absurdo que os aplicativos financeiros tradicionais fossem tão complexos, engessados e cheios de atrito a ponto de fazerem o usuário desistir no meio do caminho — exigindo que a pessoa trabalhe para a ferramenta, e não o contrário.</p>
+          <p style="margin-top: 12px;">Na Kerdos, sou a mente por trás da inteligência e de toda a estrutura que dá vida ao nosso trio de agentes — <strong>Voithos</strong>, <strong>Argos</strong> e <strong>Plutos</strong> —, conectando conversas naturais, análise de gastos e visão de mercado para entregar respostas em segundos, precisão nos números e segurança de ponta a ponta.</p>
+          <p style="margin-top: 12px;">Aos 18 anos, já com sistemas preditivos e agentes autônomos rodando em escala real, meu propósito aqui é simples: transformar engenharia pesada em uma experiência invisível, honesta e sem planilhas, onde a Inteligência Artificial trabalha por você e pelo seu patrimônio.</p>
+        </div>
+      </div>
+
+    </div><!-- /.team-carousel-track -->
+    <div class="team-nav">
+      <button class="team-arrow" id="team-prev" aria-label="Anterior">
+        <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+      </button>
+      <div class="team-dots">
+        <button class="team-dot" aria-label="Nathan"></button>
+        <button class="team-dot" aria-label="Felipe"></button>
+        <button class="team-dot" aria-label="Davi"></button>
+      </div>
+      <button class="team-arrow" id="team-next" aria-label="Próximo">
+        <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+      </button>
+    </div>
+  </div>
+  <div class="team-mission reveal">
+    <p>Somos três jovens que acreditam que <strong>educação financeira não precisa ser chata</strong>. A Kerdos nasceu da frustração real de ver o dinheiro ir embora sem entender o porquê — e da certeza de que dá para resolver isso de um jeito simples, rápido e honesto.</p>
+  </div>
+</div>
+
+<!-- ═══ TEAM POPUP ═══ -->
+<div id="team-popup-overlay">
+  <div class="team-popup-card" id="team-popup-card">
+    <button class="team-popup-close" id="team-popup-close" aria-label="Fechar">
+      <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+    <div class="team-popup-photo" id="team-popup-photo"></div>
+    <div class="team-popup-body">
+      <div class="team-popup-name" id="team-popup-name"></div>
+      <div class="team-popup-meta-row" id="team-popup-meta"></div>
+      <div class="team-popup-divider"></div>
+      <div class="team-popup-bio" id="team-popup-bio"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ CTA FINAL ═══
+     A página terminava no "Quem somos" e caía direto no rodapé: quem
+     chegou até aqui já leu tudo e está mais perto de decidir do que em
+     qualquer outro ponto, e não tinha um botão na frente.
+     Pré-lançamento: o cadastro está fechado, então o convite é para ser
+     avisado por e-mail. Ao abrir as contas, o botão volta a apontar para
+     cadastro.html e o mailto sai. -->
+<section class="cta-final" id="comecar">
+  <div class="cta-final-inner reveal">
+    <span class="section-tag">Em breve</span>
+    <h2>O mês que vem começa <span class="accent">na próxima mensagem.</span></h2>
+    <p class="cta-final-lead">Estamos nos últimos ajustes antes de abrir as contas. Quer ser um dos primeiros a usar? Deixa seu e-mail com a gente.</p>
+    <div class="cta-final-actions">
+      <a href="mailto:kerdosfinance@gmail.com?subject=Quero%20ser%20avisado%20do%20lan%C3%A7amento" class="btn-primary" data-lista-espera>Me avise no lançamento</a>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ UPGRADE TOAST ═══ -->
+<div id="upgrade-toast" class="upgrade-toast" role="status" aria-live="polite">
+  <button class="upgrade-toast-close" id="upgrade-toast-close" aria-label="Fechar">
+    <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+  </button>
+  <div class="upgrade-toast-content">
+    <div class="upgrade-toast-title">Pronto pra ir além?</div>
+  </div>
+  <a href="#comecar" class="upgrade-toast-btn" id="upgrade-toast-btn">Entrar na lista</a>
+</div>
+
+<script src="scripts/components/lista-espera.js" defer></script>
+<script src="scripts/components/how-it-works.js" defer></script>
+<script src="scripts/components/swipe.js"></script>
+
+<script>
+  /* NAVBAR SCROLL SHRINK */
+  const navEl = document.querySelector('nav');
+  window.addEventListener('scroll', () => {
+    navEl.classList.toggle('scrolled', window.scrollY > 60);
+  }, { passive: true });
+
+  /* SCROLL REVEAL */
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) { e.target.classList.add('visible'); io.unobserve(e.target); }
+    });
+  }, { threshold: 0.12 });
+  document.querySelectorAll('.reveal, .reveal-left, .reveal-right').forEach(el => io.observe(el));
+
+  /* TYPEWRITER */
+  const words = ['controle', 'dinheiro', 'tempo', 'paciência'];
+  const twEl  = document.getElementById('tw-word');
+  let wi = 0, ci = words[0].length, deleting = true;
+
+  function type() {
+    const word = words[wi];
+    if (!deleting) {
+      twEl.textContent = word.slice(0, ++ci);
+      if (ci === word.length) { deleting = true; setTimeout(type, 2200); return; }
+      setTimeout(type, 90);
+    } else {
+      twEl.textContent = word.slice(0, --ci);
+      if (ci === 0) { deleting = false; wi = (wi + 1) % words.length; setTimeout(type, 320); return; }
+      setTimeout(type, 52);
+    }
+  }
+  setTimeout(type, 3400);
+
+  /* TEAM CAROUSEL */
+  (function () {
+    var cards    = Array.from(document.querySelectorAll('.team-card'));
+    var dots     = Array.from(document.querySelectorAll('.team-dot'));
+    var track    = document.getElementById('team-track');
+    var carousel = document.getElementById('team-carousel');
+    var n        = cards.length;
+    var cur      = 0;
+
+    function syncTrackHeight() {
+      setTimeout(function () {
+        if (track) track.style.minHeight = (cards[cur].offsetHeight + 20) + 'px';
+      }, 50);
+    }
+
+    function applyClasses() {
+      cards.forEach(function (card, i) {
+        card.classList.remove('tc-active', 'tc-left', 'tc-right');
+        var rel = (i - cur + n) % n;
+        if (rel === 0)      card.classList.add('tc-active');
+        else if (rel === 1) card.classList.add('tc-right');
+        else                card.classList.add('tc-left');
+      });
+      dots.forEach(function (d, i) { d.classList.toggle('active', i === cur); });
+      syncTrackHeight();
+    }
+
+    function goTo(i) { cur = (i + n) % n; applyClasses(); }
+
+    /* ── Scroll wheel: horizontal SOMENTE sobre o card ativo ──
+       A hitbox usa a geometria estável do slot central (offsetWidth/offsetHeight,
+       imunes ao transform), nunca o rect do card em animação — caso contrário
+       o alvo escorrega no meio do gesto e o scroll vaza para a página,
+       girando o carrossel e rolando a página ao mesmo tempo. */
+    var WHEEL_THRESHOLD = 42;   // delta acumulado necessário para virar 1 card
+    var GESTURE_GAP_MS  = 180;  // silêncio que encerra um gesto (fim da inércia)
+    var accum = 0;              // delta acumulado do gesto atual
+    var lastWheelAt = 0;        // timestamp do último evento de wheel
+    var stepDone = false;       // já virou um card neste gesto
+    var gestureOutside = false; // gesto começou fora da hitbox → nunca sequestra
+
+    function activeHitbox() {
+      var r = track.getBoundingClientRect();
+      var card = cards[cur];
+      var halfW = card.offsetWidth / 2;
+      var cx = r.left + r.width / 2;
+      return {
+        left:   cx - halfW,
+        right:  cx + halfW,
+        top:    r.top,
+        bottom: r.top + card.offsetHeight
+      };
+    }
+
+    function normalizedDelta(e) {
+      var d = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
+      if (e.deltaMode === 1) d *= 16;        // DOM_DELTA_LINE
+      else if (e.deltaMode === 2) d *= 100;  // DOM_DELTA_PAGE
+      return d;
+    }
+
+    carousel.addEventListener('wheel', function (e) {
+      if (popupOverlay && popupOverlay.classList.contains('visible')) return;
+
+      var box  = activeHitbox();
+      var over = e.clientX >= box.left && e.clientX <= box.right &&
+                 e.clientY >= box.top  && e.clientY <= box.bottom;
+
+      var now = (window.performance && performance.now) ? performance.now() : Date.now();
+      if (now - lastWheelAt > GESTURE_GAP_MS) {   // novo gesto
+        accum = 0;
+        stepDone = false;
+        gestureOutside = !over;                   // trava a decisão no início do gesto
+      }
+      lastWheelAt = now;
+
+      /* Fora dos cards (ou gesto iniciado fora): scroll vertical normal da página */
+      if (!over || gestureOutside) return;
+
+      /* Sobre o card ativo: só navegação horizontal, página não rola */
+      e.preventDefault();
+      if (stepDone) return;                       // 1 card por gesto — inércia não repete
+
+      accum += normalizedDelta(e);
+      if (Math.abs(accum) >= WHEEL_THRESHOLD) {
+        goTo(cur + (accum > 0 ? 1 : -1));
+        accum = 0;
+        stepDone = true;
+      }
+    }, { passive: false });
+
+    /* Dot navigation */
+    dots.forEach(function (d, i) {
+      d.addEventListener('click', function () { goTo(i); });
+    });
+
+    /* Arrow navigation */
+    document.getElementById('team-prev').addEventListener('click', function () { goTo(cur - 1); });
+    document.getElementById('team-next').addEventListener('click', function () { goTo(cur + 1); });
+
+    /* Swipe no celular: o card ativo segue o dedo e, ao soltar além do
+       limite, o carrossel vira. Os estilos inline só existem durante o
+       arraste; ao limpá-los a transição do CSS leva o card ao destino. */
+    if (window.KerdosSwipe) {
+      KerdosSwipe(track, {
+        onStart: function () { cards[cur].style.transition = 'none'; },
+        onMove: function (dx) {
+          var c = cards[cur];
+          c.style.transform = 'translateX(' + dx + 'px) scale(' + (1 - Math.min(Math.abs(dx) / 1600, 0.08)) + ')';
+          c.style.opacity = Math.max(0.45, 1 - Math.abs(dx) / 520);
+        },
+        onEnd: function (dir) {
+          var c = cards[cur];
+          c.style.transition = ''; c.style.transform = ''; c.style.opacity = '';
+          if (dir) goTo(cur - dir);
+        }
+      });
+    }
+
+    /* Team popup */
+    var popupOverlay = document.getElementById('team-popup-overlay');
+    var popupClose   = document.getElementById('team-popup-close');
+
+    function openTeamPopup(card) {
+      document.getElementById('team-popup-photo').innerHTML = card.querySelector('.team-photo').innerHTML;
+      document.getElementById('team-popup-name').textContent = card.querySelector('.team-name').textContent;
+      document.getElementById('team-popup-meta').innerHTML   = card.querySelector('.team-meta').innerHTML;
+      document.getElementById('team-popup-bio').innerHTML    = card.querySelector('.team-card-bio').innerHTML;
+      popupOverlay.classList.add('visible');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeTeamPopup() {
+      popupOverlay.classList.remove('visible');
+      document.body.style.overflow = '';
+    }
+
+    cards.forEach(function (card) {
+      card.addEventListener('click', function () {
+        if (!card.classList.contains('tc-active')) return;
+        openTeamPopup(card);
+      });
+    });
+
+    popupOverlay.addEventListener('click', function (e) {
+      if (e.target === popupOverlay) closeTeamPopup();
+    });
+
+    popupClose.addEventListener('click', closeTeamPopup);
+
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') closeTeamPopup();
+    });
+
+    applyClasses();
+  })();
+
+  /* ══ PHONE: self-building looping conversation engine ══ */
+  (function () {
+    var reduce     = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var activeView = 'whatsapp';
+    var timers     = [];      // active timeouts for the running view
+    var switchTimer = null;   // pending tab-switch start
+    var runToken   = 0;       // bump to invalidate any in-flight run
+    var visible    = false;
+
+    /* Carrossel: ao terminar a conversa, a tela vira sozinha para a próxima */
+    var ORDER    = ['whatsapp', 'telegram', 'kerdos'];
+    var SLIDE_MS = 420;       // igual à transição do .phone-views-track
+    var HOLD_MS  = 1800;      // conversa completa fica parada antes de virar
+
+    /* Inline SVGs */
+    var TICKS_SVG = '<svg viewBox="0 0 18 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 6.5 4.2 9.5 9.6 2.5"/><polyline points="7.6 9.2 8.1 8.7 13.8 2.5"/></svg>';
+    var VERIFIED_SVG = '<svg class="verified-badge" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M8 12.4l2.6 2.6L16 9" fill="none" stroke="#10222E" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+
+    /* Per-platform class map */
+    var P = {
+      whatsapp: { msg: 'wa-msg', user: 'wa-msg-user', bot: 'wa-msg-bot', bubble: 'wa-bubble', typing: 'chat-typing typing-wa' },
+      telegram: { msg: 'tg-msg', user: 'tg-msg-user', bot: 'tg-msg-bot', bubble: 'tg-bubble', typing: 'chat-typing typing-tg' },
+      kerdos:   { msg: 'km',     user: 'km-user',     bot: 'km-bot',     bubble: 'km-bubble', typing: 'chat-typing typing-km' }
+    };
+
+    var containers = {
+      whatsapp: document.querySelector('#phone-view-whatsapp .wa-messages'),
+      telegram: document.querySelector('#phone-view-telegram .tg-messages'),
+      kerdos:   document.querySelector('#phone-view-kerdos .kerdos-msgs')
+    };
+
+    /* Input pills + their resting placeholders (for the user-typing effect) */
+    var pills = {
+      whatsapp: document.querySelector('#phone-view-whatsapp .wa-input-pill'),
+      telegram: document.querySelector('#phone-view-telegram .tg-input-pill'),
+      kerdos:   document.querySelector('#phone-view-kerdos .kerdos-input-pill')
+    };
+    var placeholders = { whatsapp: 'Mensagem', telegram: 'Mensagem', kerdos: 'Manda uma mensagem…' };
+
+    /* Conversation scripts — turns played sequentially, then looped */
+    var BOT = 'Voithos';
+    var convos = {
+      whatsapp: [
+        { from: 'user', time: '08:45', text: 'gastei 120 no mercado hoje' },
+        { from: 'bot',  time: '08:45', name: BOT, text: 'Boa, já registrei! ✅ Mercado tá sendo sua maior categoria esse mês.' },
+        { chips: ['Ver categorias', 'Definir meta'] },
+        { from: 'user', time: '08:46', text: 'quanto gastei essa semana?' },
+        { from: 'bot',  time: '08:46', name: BOT, text: 'R$ 487 até agora, 68% da sua meta semanal. Tá indo bem 👍' },
+        { from: 'user', time: '08:47', text: 'e no ifood?' },
+        { from: 'bot',  time: '08:47', name: BOT, text: 'R$ 92 essa semana. Tá 20% acima da média, fica de olho 👀' },
+        { chips: ['Resumo do mês', 'Criar alerta'] }
+      ],
+      telegram: [
+        { from: 'user', time: '13:02', text: 'registra 85 no almoço' },
+        { from: 'bot',  time: '13:02', name: BOT, text: 'Anotado! 🍽️ Alimentação já é sua 2ª maior categoria este mês.' },
+        { chips: ['Categorias', 'Meta do mês'] },
+        { from: 'user', time: '13:03', text: 'qual minha meta do mês?' },
+        { from: 'bot',  time: '13:03', name: BOT, text: 'Meta: R$ 2.000. Você usou R$ 1.140. Faltam R$ 860 pra 20 dias 📊' },
+        { from: 'user', time: '13:04', text: 'tô no caminho certo?' },
+        { from: 'bot',  time: '13:04', name: BOT, text: 'Tá sim! No ritmo atual você fecha o mês com folga 🎯' },
+        { chips: ['Ver projeção', 'Investir sobra'] }
+      ],
+      kerdos: [
+        { from: 'user', time: '22:15', text: 'tô gastando muito?' },
+        { from: 'bot',  time: '22:15', name: BOT, text: 'Um pouco. Você já passou 30% do padrão da semana, e ainda é quarta.' },
+        { chips: ['Ver detalhes', 'Cortar gastos'] },
+        { from: 'user', time: '22:16', text: 'me dá um resumo do mês' },
+        { from: 'bot',  time: '22:16', name: BOT, text: 'Claro! R$ 1.240 em 18 dias. Mercado (42%), iFood (28%), Transporte (18%).' },
+        { from: 'user', time: '22:17', text: 'onde dá pra economizar?' },
+        { from: 'bot',  time: '22:17', name: BOT, text: 'iFood. Cortando pela metade você guarda ~R$ 170 por mês 💰' },
+        { chips: ['Criar meta', 'Investir'] }
+      ]
+    };
+
+    /* ── DOM builders ── */
+    function el(tag, cls, html) {
+      var e = document.createElement(tag);
+      if (cls) e.className = cls;
+      if (html != null) e.innerHTML = html;
+      return e;
+    }
+    function metaHTML(turn) {
+      var ticks = turn.from === 'user' ? '<span class="bubble-ticks">' + TICKS_SVG + '</span>' : '';
+      return '<span class="bubble-meta">' + turn.time + ticks + '</span>';
+    }
+    function makeMessage(view, turn) {
+      var p = P[view];
+      var wrap = el('div', p.msg + ' ' + (turn.from === 'user' ? p.user : p.bot));
+      var name = turn.from === 'bot' ? '<span class="bot-name">' + turn.name + VERIFIED_SVG + '</span>' : '';
+      wrap.appendChild(el('div', p.bubble, name + turn.text + metaHTML(turn)));
+      return wrap;
+    }
+    function makeTyping(view) {
+      return el('div', P[view].typing, '<span></span><span></span><span></span>');
+    }
+    function makeChips(arr) {
+      var d = el('div', 'chat-chips');
+      arr.forEach(function (c) { d.appendChild(el('span', 'chat-chip', c)); });
+      return d;
+    }
+    function nodeFor(view, turn) {
+      return turn.chips ? makeChips(turn.chips) : makeMessage(view, turn);
+    }
+
+    /* ── Timers / scroll ── */
+    function clearTimers() { timers.forEach(clearTimeout); timers = []; }
+    function later(fn, ms) { var id = setTimeout(fn, ms); timers.push(id); return id; }
+    function scrollDown(c) {
+      if (reduce) { c.scrollTop = c.scrollHeight; return; }
+      c.scrollTo({ top: c.scrollHeight, behavior: 'smooth' });
+    }
+    function reveal(node) {
+      requestAnimationFrame(function () {
+        requestAnimationFrame(function () { node.classList.add('is-in'); });
+      });
+    }
+
+    function caret() { return el('span', 'input-caret'); }
+    function resetPill(view) {
+      var pill = pills[view];
+      if (!pill) return;
+      pill.classList.remove('is-typing');
+      pill.textContent = placeholders[view];
+    }
+    /* Type the user's message into the input pill char-by-char, then "send" */
+    function typeIntoInput(view, text, done) {
+      var pill = pills[view];
+      if (!pill) { done(); return; }
+      pill.classList.add('is-typing');
+      pill.textContent = '';
+      pill.appendChild(caret());
+      var i = 0;
+      function tick() {
+        i++;
+        pill.textContent = text.slice(0, i);
+        pill.appendChild(caret());
+        if (i < text.length) {
+          later(tick, 35 + Math.random() * 20);
+        } else {
+          later(function () { resetPill(view); done(); }, 250); /* sent */
+        }
+      }
+      later(tick, 220);
+    }
+
+    /* Static full render (reduced motion / no animation) */
+    function renderStatic(view) {
+      var c = containers[view]; if (!c) return;
+      c.innerHTML = '';
+      convos[view].forEach(function (turn) {
+        var node = nodeFor(view, turn);
+        node.classList.add('is-in');
+        c.appendChild(node);
+      });
+      c.scrollTop = c.scrollHeight;
+    }
+
+    /* Animated, looping run for a single view */
+    function run(view) {
+      clearTimers();
+      var token = ++runToken;
+      var c = containers[view]; if (!c) return;
+      c.innerHTML = '';
+      resetPill(view);            // clear any half-typed input from a previous run
+      var turns = convos[view];
+      var i = 0;
+
+      function next() {
+        if (token !== runToken) return;          // superseded
+        if (i >= turns.length) {                  // conversa completa → segura e vira pra próxima tela
+          later(function advance() {
+            if (token !== runToken) return;
+            if (swipe && swipe.isDragging()) { later(advance, 300); return; } // não vira debaixo do dedo
+            goTo(ORDER[(ORDER.indexOf(view) + 1) % ORDER.length]);
+          }, HOLD_MS);
+          return;
+        }
+        var turn = turns[i++];
+
+        if (turn.chips) {
+          var chips = makeChips(turn.chips);
+          c.appendChild(chips); reveal(chips); scrollDown(c);
+          later(next, 850);
+          return;
+        }
+
+        if (turn.from === 'bot') {                // typing → bubble
+          var typing = makeTyping(view);
+          c.appendChild(typing); reveal(typing); scrollDown(c);
+          later(function () {
+            if (token !== runToken) return;
+            if (typing.parentNode) typing.parentNode.removeChild(typing);
+            var msg = makeMessage(view, turn);
+            c.appendChild(msg); reveal(msg); scrollDown(c);
+            later(next, 950 + Math.random() * 300);
+          }, 950);
+          return;
+        }
+
+        /* user: type into the input pill first, then the bubble is "sent" */
+        typeIntoInput(view, turn.text, function () {
+          if (token !== runToken) return;
+          var um = makeMessage(view, turn);
+          c.appendChild(um); reveal(um); scrollDown(c);
+          later(next, 650 + Math.random() * 300);
+        });
+      }
+      next();
+    }
+
+    /* Sincroniza o botão ativo + a posição do track com a tela `view` */
+    function setActiveTab(view) {
+      document.querySelectorAll('.phone-toggle-btn').forEach(function (b) {
+        b.classList.remove('active', 'wa-active', 'tg-active');
+        if (b.dataset.view !== view) return;
+        b.classList.add('active');
+        if (view === 'whatsapp') b.classList.add('wa-active');
+        if (view === 'telegram') b.classList.add('tg-active');
+      });
+      var track = document.querySelector('.phone-views-track');
+      if (track) {
+        track.classList.remove('show-telegram', 'show-kerdos');
+        if (view === 'telegram') track.classList.add('show-telegram');
+        if (view === 'kerdos')   track.classList.add('show-kerdos');
+      }
+    }
+
+    /* Único caminho para trocar de tela — usado pelo clique nas abas E pelo
+       carrossel automático: desliza o track e recomeça a conversa de destino. */
+    function goTo(view) {
+      setActiveTab(view);
+      activeView = view;
+      if (reduce) { renderStatic(view); return; }
+      stop();
+      /* espera o slide de 400ms terminar antes de montar a nova conversa */
+      if (visible) switchTimer = setTimeout(function () { run(view); }, SLIDE_MS);
+    }
+
+    function stop() {
+      runToken++;
+      clearTimers();
+      if (switchTimer) { clearTimeout(switchTimer); switchTimer = null; }
+      resetPill('whatsapp'); resetPill('telegram'); resetPill('kerdos');
+    }
+
+    /* Reduced motion: paint all three statically, no engine */
+    if (reduce) {
+      renderStatic('whatsapp'); renderStatic('telegram'); renderStatic('kerdos');
+    }
+
+    /* Pause/resume with viewport visibility (perf + focus) */
+    var mockup = document.querySelector('.device-mockup');
+    if (mockup && !reduce) {
+      var io = new IntersectionObserver(function (entries) {
+        var isVis = entries[0].isIntersecting;
+        if (isVis === visible) return;
+        visible = isVis;
+        if (visible) run(activeView); else stop();
+      }, { threshold: 0.3 });
+      io.observe(mockup);
+    }
+
+    /* Tab toggle — o clique só antecipa o que o carrossel já faz sozinho */
+    document.querySelectorAll('.phone-toggle-btn').forEach(function (btn) {
+      btn.addEventListener('click', function () { goTo(btn.dataset.view); });
+    });
+
+    /* Swipe na tela do celular: a tela segue o dedo e, ao soltar além do
+       limite, vai para a vizinha pelo mesmo goTo das abas. Nas pontas
+       (WhatsApp ← / Kerdos App →) o arraste tem resistência e volta,
+       como um pager nativo. O track tem 300% de largura, então a conta
+       usa a largura da tela visível (o pai dele). */
+    var viewsTrack = document.querySelector('.phone-views-track');
+    var swipe = null;
+    if (viewsTrack && window.KerdosSwipe) {
+      var screenW = function () { return viewsTrack.parentElement.clientWidth; };
+      swipe = KerdosSwipe(viewsTrack, {
+        width: screenW,
+        onStart: function () { viewsTrack.style.transition = 'none'; },
+        onMove: function (dx) {
+          var i = ORDER.indexOf(activeView);
+          if ((i === 0 && dx > 0) || (i === ORDER.length - 1 && dx < 0)) dx /= 3;
+          viewsTrack.style.transform = 'translateX(' + (dx - i * screenW()) + 'px)';
+        },
+        onEnd: function (dir) {
+          viewsTrack.style.transition = ''; viewsTrack.style.transform = '';
+          var i = ORDER.indexOf(activeView) - dir;
+          if (dir && i >= 0 && i < ORDER.length) goTo(ORDER[i]);
+        }
+      });
+    }
+  })();
+
+  /* UPGRADE TOAST — aparece após 15s, dispensável */
+  (function () {
+    var toast    = document.getElementById('upgrade-toast');
+    var closeBtn = document.getElementById('upgrade-toast-close');
+    if (!toast) return;
+
+    var dismissed = localStorage.getItem('kerdos-toast-dismissed');
+    if (!dismissed) {
+      setTimeout(function () {
+        toast.classList.add('visible');
+      }, 15000);
+    }
+
+    function esconder() {
+      toast.classList.remove('visible');
+      toast.classList.add('hiding');
+      localStorage.setItem('kerdos-toast-dismissed', '1');
+    }
+
+    closeBtn.addEventListener('click', esconder);
+
+    /* "Entrar na lista" leva até a seção final (#comecar) e, ao chegar,
+       abre o formulário da lista de espera. */
+    var ctaBtn = document.getElementById('upgrade-toast-btn');
+    var alvo   = document.getElementById('comecar');
+    if (ctaBtn && alvo) {
+      ctaBtn.addEventListener('click', function (e) {
+        e.preventDefault();
+        esconder();
+
+        var reduz = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        alvo.scrollIntoView({ behavior: reduz ? 'auto' : 'smooth', block: 'center' });
+
+        var aberto = false;
+        function abrirForm() {
+          if (aberto) return;
+          aberto = true;
+          window.removeEventListener('scrollend', abrirForm);
+          if (window.KerdosListaEspera) window.KerdosListaEspera.abrir();
+        }
+        /* scrollend não existe no Safari antigo: o timeout garante a abertura */
+        window.addEventListener('scrollend', abrirForm);
+        setTimeout(abrirForm, reduz ? 0 : 1200);
+      });
+    }
+  })();
+
+  /* SECURITY — sticky-scroll progressive reveal */
+  (function () {
+    var sec = document.querySelector('.security-section');
+    var ofOuter = document.querySelector('.sec-of-outer');
+    if (!sec) return;
+    sec.classList.add('js-ready');
+
+    /* No celular não há sticky (a seção vira uma coluna comum), então o
+       progresso de rolagem dentro da seção não significa nada. Lá cada
+       item entra sozinho quando chega na tela: IntersectionObserver
+       marca .sec-in uma vez e para de observar, e o CSS do breakpoint
+       de 768px faz o fade + subida. O cadeado abre quando o card do
+       Open Finance entra, fechando a sequência como no desktop.
+
+       Armadilha: o observer liga SEMPRE, não só quando a página abre
+       estreita. O CSS que esconde os itens é por media query e vale na
+       hora em que a tela fica estreita (girar o aparelho, redimensionar
+       a janela); se o observer dependesse do matchMedia do carregamento,
+       quem abriu largo e estreitou ficava com a seção inteira em
+       opacity 0. No desktop o .sec-in não tem efeito nenhum. */
+    var mobile = window.matchMedia('(max-width: 768px)');
+    var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var itens  = sec.querySelectorAll('.security-header, .lock-container, .branch, .sec-of-outer');
+    if (reduce || !('IntersectionObserver' in window)) {
+      itens.forEach(function (el) { el.classList.add('sec-in'); });
+      if (mobile.matches) sec.classList.add('unlocked');
+    } else {
+      var ioSec = new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) {
+          if (!e.isIntersecting) return;
+          e.target.classList.add('sec-in');
+          if (e.target === ofOuter && mobile.matches) {
+            setTimeout(function () { sec.classList.add('unlocked'); }, 350);
+          }
+          ioSec.unobserve(e.target);
+        });
+      }, { threshold: 0.25, rootMargin: '0px 0px -8% 0px' });
+      itens.forEach(function (el) { ioSec.observe(el); });
+    }
+
+    function update() {
+      if (mobile.matches) return;
+      var rect = sec.getBoundingClientRect();
+      var vh = window.innerHeight;
+      var maxScroll = rect.height - vh;
+      if (maxScroll <= 0) return;
+      var scrolled = Math.max(0, -rect.top);
+      var progress = Math.min(1, scrolled / maxScroll);
+
+      sec.classList.toggle('reveal-1', progress >= 0.15);
+      sec.classList.toggle('reveal-2', progress >= 0.32);
+      sec.classList.toggle('reveal-3', progress >= 0.48);
+      sec.classList.toggle('reveal-4', progress >= 0.64);
+      sec.classList.toggle('unlocked',  progress >= 0.82);
+      if (ofOuter) ofOuter.classList.toggle('of-visible', progress >= 0.82);
+    }
+
+    window.addEventListener('scroll', update, { passive: true });
+    update();
+  })();
+
+  /* ARGOS — satellite 1 percentage rotation */
+  (function () {
+    var el = document.getElementById('argos-pct');
+    if (!el) return;
+    var values = [18, 21, 24, 26, 28];
+    var idx = 2;
+    setInterval(function () {
+      idx = (idx + 1) % values.length;
+      el.classList.add('argos-fading');
+      setTimeout(function () {
+        el.textContent = formatPercent(values[idx]);
+        el.classList.remove('argos-fading');
+      }, 400);
+    }, 10000);
+  })();
+
+  /* "Role para explorar" aparece quando a hero assenta e se dissolve no
+     primeiro scroll — depois que o usuário rolou, o convite virou ruído.
+     Volta se ele retornar ao topo. A transição toda vive no CSS
+     (.scroll-indicator / .is-visible); aqui só decidimos o estado. */
+  (function () {
+    var cue = document.querySelector('.scroll-indicator');
+    if (!cue) return;
+
+    var liberado = false;
+
+    function sincronizar() {
+      /* 90px: só some quando a rolagem é intencional, não num toque do trackpad */
+      cue.classList.toggle('is-visible', liberado && window.scrollY <= 90);
+    }
+
+    setTimeout(function () {
+      liberado = true;
+      sincronizar();
+    }, 3000);
+
+    window.addEventListener('scroll', sincronizar, { passive: true });
+  })();
+</script>
+
+</body>
+</html> 

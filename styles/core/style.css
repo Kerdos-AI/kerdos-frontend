@@ -1,4 +1,4 @@
-/* Space Grotesk vem do <link> no <head> do home.html. Não repita aqui
+/* Space Grotesk vem do <link> no <head> do index.html. Não repita aqui
    com @import: ele baixava a mesma fonte de novo e bloqueava a pintura.
 
    SF Pro Display — used exclusively inside .device-screen. Os .woff2
@@ -1115,7 +1115,7 @@ h2 .accent { color: var(--brand-display); }
 
 /* ── Scroll indicator ── */
 /* Estado de repouso = invisível. Quem mostra é a classe .is-visible,
-   posta pelo JS em home.html.
+   posta pelo JS em index.html.
 
    Sem @keyframes aqui de propósito: uma animação com fill-mode forwards
    fica "segurando" a opacity e o navegador ignora a transição — era o

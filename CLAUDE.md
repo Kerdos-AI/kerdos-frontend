@@ -25,8 +25,7 @@ Não há testes automatizados. Para validar uma mudança visual, abra a página 
 
 | Caminho | O que é |
 | --- | --- |
-| `index.html` | Só redireciona para `pages/home.html`. |
-| `pages/home.html` | **A landing inteira** (~1500 linhas). Seções: hero, `#como-funciona`, `#security-section`, `#quem-somos` (equipe), `#comecar` (CTA final). Tem um `<script>` inline no fim (navbar, scroll reveal, typewriter). |
+| `index.html` | **A landing inteira** (~880 linhas), servida na raiz (`kerdos.com.br/`). Seções: hero, `#como-funciona`, `#security-section`, `#quem-somos` (equipe), `#comecar` (CTA final). Tem um `<script>` inline no fim (navbar, scroll reveal, typewriter). |
 | `styles/core/theme.css` | **Fonte única de cor.** Primeira folha de estilo carregada. |
 | `styles/core/style.css` | Estilos gerais da página. |
 | `styles/core/scrollbar.css` | Scrollbar dourada. Carregada **por último**. |
@@ -35,7 +34,7 @@ Não há testes automatizados. Para validar uma mudança visual, abra a página 
 | `scripts/components/*.js` | `lista-espera.js` (popup), `how-it-works.js` (animações dos cards), `swipe.js` (gesto mobile), `cursor.js`, `app-loader.js`. |
 | `api/waitlist.js` | Validação, honeypot, rate limit e proxy para o n8n. |
 | `llms.txt`, `robots.txt`, `sitemap.xml` | SEO e descrição para LLMs. |
-| `vercel.json` | Headers de segurança, redirect 308 de `/` para `/pages/home.html` e cache de 7 dias em `/assets/`. |
+| `vercel.json` | Headers de segurança, redirect 308 das URLs antigas (`/pages/*`, `/home.html`) para `/` e cache de 7 dias em `/assets/`. |
 
 ## Regras do projeto
 
@@ -61,9 +60,9 @@ Não há testes automatizados. Para validar uma mudança visual, abra a página 
 - A validação do front é conforto; a segurança está no `api/waitlist.js`. Não exponha a URL do n8n no navegador.
 
 ### SEO
-- A URL canônica `https://kerdos.com.br/pages/home.html` aparece em `home.html`, `index.html` e `sitemap.xml`. Se mudar uma, mude todas.
+- A URL canônica `https://kerdos.com.br/` aparece em `index.html` (canonical, `og:url`, JSON-LD), `sitemap.xml` e `llms.txt`. Se mudar uma, mude todas.
 - Ao alterar o conteúdo da página, atualize o `lastmod` do `sitemap.xml` e, se for o caso, o `llms.txt`.
-- O JSON-LD em `home.html` descreve só o que existe. Não invente preço, avaliação ou recurso lançado.
+- O JSON-LD em `index.html` descreve só o que existe. Não invente preço, avaliação ou recurso lançado.
 
 ### Copy
 - Português do Brasil, tom direto e próximo. O produto está em **pré-lançamento**: nada de "cadastre-se", "faça login" ou "assine". O CTA é sempre a lista de espera.
@@ -76,7 +75,7 @@ Não há testes automatizados. Para validar uma mudança visual, abra a página 
 
 - O comentário de `app-loader.js` cita `app.html`, `intro.js` e outras páginas que **não existem neste repo** (herança do app). Não procure por elas.
 - `.playwright-mcp/` é lixo de sessões de teste. Não versione.
-- `pages/home.html` é grande: leia por trechos (`offset`/`limit`) ou busque pelo `id` da seção em vez de abrir o arquivo inteiro.
+- `index.html` é grande: leia por trechos (`offset`/`limit`) ou busque pelo `id` da seção em vez de abrir o arquivo inteiro.
 
 ## Git
 
