@@ -54,17 +54,13 @@ function login(userData) {
 /* Limpa todos os dados de usuário, chats, transações e estado do storage */
 function clearUserData() {
   // Preserva preferências de interface/dispositivo que não pertencem à sessão do usuário
-  var theme           = localStorage.getItem('kerdos-theme');
-  var themeV2         = localStorage.getItem('kerdos-theme-v2');
   var rememberedEmail = localStorage.getItem('kerdos_remembered_email');
 
   // Limpa completamente todos os dados de usuário, chats, transações e caches locais
   localStorage.clear();
   try { sessionStorage.clear(); } catch (e) {}
 
-  // Restaura o tema e e-mail lembrado (se houver)
-  if (theme)           localStorage.setItem('kerdos-theme', theme);
-  if (themeV2)         localStorage.setItem('kerdos-theme-v2', themeV2);
+  // Restaura o e-mail lembrado (se houver)
   if (rememberedEmail) localStorage.setItem('kerdos_remembered_email', rememberedEmail);
 }
 

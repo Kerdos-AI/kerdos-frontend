@@ -1,10 +1,6 @@
 (function () {
   'use strict';
 
-  /* O tema (aplicar, persistir, ouvir o SO, ligar os .theme-opt)
-     mora em scripts/theme.js — que roda em TODAS as páginas, não
-     só nas 5 que têm este modal. */
-
   /* ══ MODAL ══ */
   const overlay  = document.getElementById('modal-overlay');
   const navLink  = document.getElementById('nav-perfil');

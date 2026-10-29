@@ -9,7 +9,7 @@
   var ID_MODAL  = 'tcc-subscription-modal';
   var ID_STYLES = 'tcc-subscription-styles';
 
-  /* ── 1. Injeção de Estilos com suporte Dark/Light mode ── */
+  /* ── 1. Injeção de Estilos (tema escuro único) ── */
   function injectStyles() {
     if (document.getElementById(ID_STYLES)) return;
 
@@ -220,36 +220,6 @@
       }
       .tcc-primary-btn:active {
         transform: translateY(1px);
-      }
-      /* Suporte ao modo claro (Light Mode) */
-      html.light-mode .tcc-card {
-        background: #ffffff;
-        color: #1a1a1a;
-        border-color: rgba(228, 156, 0, 0.45);
-        box-shadow: 0 24px 64px rgba(0, 0, 0, 0.15), 0 0 32px rgba(228, 156, 0, 0.16);
-      }
-      html.light-mode .tcc-title {
-        color: #111827;
-      }
-      html.light-mode .tcc-desc {
-        color: #4b5563;
-      }
-      html.light-mode .tcc-desc strong {
-        color: #111827;
-      }
-      html.light-mode .tcc-pill-item {
-        background: #f9fafb;
-        border-color: #e5e7eb;
-        color: #374151;
-      }
-      html.light-mode .tcc-close-btn {
-        background: #f3f4f6;
-        border-color: #e5e7eb;
-        color: #6b7280;
-      }
-      html.light-mode .tcc-close-btn:hover {
-        background: #e5e7eb;
-        color: #111827;
       }
       /* Responsividade mobile */
       @media (max-width: 520px) {

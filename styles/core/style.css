@@ -44,6 +44,11 @@ button, input, select, textarea { font-family: inherit; }
    em html e body, então nada muda lá. */
 html { scroll-behavior: smooth; overflow-x: clip; }
 
+/* Some com o retângulo azul que o navegador mobile pinta sobre botões
+   e links no toque. É herdado, então vale para a página inteira; o
+   feedback de toque fica a cargo dos :hover/:active de cada componente. */
+html { -webkit-tap-highlight-color: transparent; }
+
 body {
   background: var(--bg);
   color: var(--text);
@@ -62,20 +67,6 @@ body::after {
   pointer-events: none;
   z-index: 0;      /* moved below content (z-index 1+) so noise never covers the mockup */
   opacity: 0.03;   /* drastically reduced — grain remains faintly on background only */
-}
-
-/* No claro o SVG com feTurbulence do bloco acima fica de fora: em
-   alguns ambientes de validação a página inteira renderiza em
-   branco com esse filtro ativo (R6). Grão vira CSS puro — pontos
-   radiais empilhados em tamanhos primos entre si, canal --ink-rgb
-   (sem literal novo), opacidade subindo um pouco em relação ao
-   escuro porque grão escuro sobre papel claro lê mais fraco que
-   grão branco sobre fundo escuro no mesmo alpha. */
-html.light-mode body::after {
-  background-image: var(--grain-bg);
-  background-size: var(--grain-size);
-  filter: none;
-  opacity: var(--grain-opacity);
 }
 
 /* ══ LOADER ══ */
@@ -900,11 +891,6 @@ footer { padding: 64px 80px 40px; }
 .footer-wordmark { display: inline-flex; margin-bottom: 16px; color: rgba(var(--ink-rgb, 255,255,255), 0.35); transition: color 0.3s ease; }
 .footer-wordmark svg { height: 22px; width: auto; display: block; }
 footer:hover .footer-wordmark { color: rgba(var(--ink-rgb, 255,255,255), 0.6); }
-/* Os mesmos alfas sobre fundo claro caem para ~2:1. No claro valem os
-   tokens já calibrados em theme.css. */
-.light-mode .footer-wordmark { color: var(--ink-3); }
-.light-mode footer:hover .footer-wordmark { color: var(--ink-2); }
-.light-mode .footer-copy { color: var(--ink-4); }
 .footer-tagline { font-size: 13px; color: var(--muted); line-height: 1.65; font-weight: 300; max-width: 240px; margin-bottom: 24px; }
 .social-links { display: flex; gap: 8px; }
 .social-link { width: 36px; height: 36px; border-radius: 9px; background: var(--bg3); border: 0.5px solid var(--border); display: flex; align-items: center; justify-content: center; text-decoration: none; color: var(--muted); transition: border-color 0.2s, background 0.2s; }
@@ -1165,11 +1151,14 @@ footer:hover .footer-wordmark { color: rgba(var(--ink-rgb, 255,255,255), 0.6); }
 .upgrade-toast {
   position: fixed;
   bottom: 28px;
-  right: 28px;
+  /* Centralizado com left/right 0 + margin auto, e não translateX(-50%):
+     o transform já é da animação de entrada/saída. */
+  left: 0; right: 0;
+  margin-inline: auto;
   transform: translateY(calc(100% + 60px));
   z-index: 4000;
   width: max-content;
-  max-width: calc(100vw - 56px);
+  max-width: calc(100vw - 32px);
   display: flex;
   align-items: center;
   gap: 14px;

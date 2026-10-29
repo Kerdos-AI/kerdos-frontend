@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-BR" data-theme="dark">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Kerdos Finance · Controle de gastos pelo WhatsApp</title>
+  <title>Kerdos Finance</title>
   <!-- Metadados de busca e de compartilhamento. O produto vive no
        WhatsApp, então o link da landing é colado em conversa o tempo
        todo: sem og:* ele chega como uma URL crua, sem título nem imagem.
@@ -28,8 +28,9 @@
   <meta name="twitter:image" content="https://kerdos.com.br/assets/og-kerdos.png">
   <meta property="og:image:type" content="image/png">
   <meta name="robots" content="index, follow, max-image-preview:large">
-  <meta name="theme-color" content="#0C0C0B" media="(prefers-color-scheme: dark)">
-  <meta name="theme-color" content="#F5F2EA" media="(prefers-color-scheme: light)">
+  <!-- Tema único: escuro (preto e dourado), com o sistema em claro ou escuro. -->
+  <meta name="theme-color" content="#0C0C0B">
+  <meta name="color-scheme" content="dark">
   <link rel="alternate" type="text/plain" href="https://kerdos.com.br/llms.txt" title="llms.txt">
   <!-- Dados estruturados (schema.org). Descrevem só o que a página
        mostra: empresa, site e o produto em pré-lançamento. Sem preço
@@ -88,35 +89,10 @@
       }
     })();
   </script>
-  <script>
-    /* Anti-FOUC — inline e bloqueante de propósito: um <script src>
-       sincrono aqui custaria um RTT na primeira pintura de cada
-       pagina, num site estatico sem build. As 10 copias sao
-       byte-identicas; tools/check-theme.sh garante que continuem.
-       Precisa repetir a migracao v2 de theme.js, senao a primeira
-       pintura discorda do runtime e da flash. */
-    (function () {
-      try {
-        var L = localStorage;
-        if (!L.getItem('kerdos-theme-v2')) {
-          if (L.getItem('kerdos-theme') === 'dark') L.removeItem('kerdos-theme');
-          L.setItem('kerdos-theme-v2', '1');
-        }
-        var q = (location.search.match(/[?&]theme=(dark|light|system)/) || [])[1];
-        var t = q || L.getItem('kerdos-theme') || 'system';
-        var d = t === 'dark' || (t === 'system' && matchMedia('(prefers-color-scheme:dark)').matches);
-        var r = document.documentElement;
-        r.classList.toggle('light-mode', !d);
-        r.dataset.theme = d ? 'dark' : 'light';
-        r.dataset.themePref = t;
-      } catch (e) {}
-    })();
-  </script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../styles/core/theme.css">
-  <script src="../scripts/core/theme.js" defer></script>
   <link rel="stylesheet" href="../styles/components/navbar.css">
   <!-- Opt-out das View Transitions entre páginas (evita o loader esmaecido no cross-fade) -->
   <style>@view-transition { navigation: none; }</style>
@@ -998,34 +974,7 @@
           <h3>Aparência</h3>
           <p>Personalize a interface da Kerdos Finance</p>
         </div>
-        <div class="mp-section-lbl">Tema</div>
-        <div class="theme-grid">
-          <button class="theme-opt active" data-theme="dark">
-            <div class="theme-check-icon"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
-            <div class="theme-thumb tt-dark">
-              <div class="tt-topbar"><span class="tt-dot"></span><span class="tt-dot"></span><span class="tt-dot"></span></div>
-              <div class="tt-content"><div class="tt-sidebar"></div><div class="tt-main"><div class="tt-card tt-card-g"></div><div class="tt-card"></div><div class="tt-card"></div></div></div>
-            </div>
-            <span class="theme-opt-name">Escuro</span>
-          </button>
-          <button class="theme-opt" data-theme="light">
-            <div class="theme-check-icon"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
-            <div class="theme-thumb tt-light">
-              <div class="tt-topbar"><span class="tt-dot"></span><span class="tt-dot"></span><span class="tt-dot"></span></div>
-              <div class="tt-content"><div class="tt-sidebar"></div><div class="tt-main"><div class="tt-card tt-card-g"></div><div class="tt-card"></div><div class="tt-card"></div></div></div>
-            </div>
-            <span class="theme-opt-name">Claro</span>
-          </button>
-          <button class="theme-opt" data-theme="system">
-            <div class="theme-check-icon"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
-            <div class="theme-thumb tt-system">
-              <div class="tt-sys-d"><div class="tt-sys-bar"></div><div class="tt-sys-body"><div class="tt-sys-card"></div><div class="tt-sys-card"></div></div></div>
-              <div class="tt-sys-l"><div class="tt-sys-bar"></div><div class="tt-sys-body"><div class="tt-sys-card"></div><div class="tt-sys-card"></div></div></div>
-            </div>
-            <span class="theme-opt-name">Sistema</span>
-          </button>
-        </div>
-        <div class="mp-section-lbl" style="margin-top:20px;">Cursor</div>
+        <div class="mp-section-lbl" style="margin-top:0;">Cursor</div>
         <label class="s-row" style="border-bottom:none;">
           <div class="s-row-info">
             <div class="s-lbl">Cursor personalizado</div>

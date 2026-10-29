@@ -1,9 +1,7 @@
 /* ════════════════════════════════════════════════════════════
    lista-espera.css — popup de inscrição no lançamento.
 
-   Prefixo le- (lista de espera). Só consome tokens de theme.css:
-   o tcc-popup.js, que veio antes, injeta cor literal no próprio
-   JS e por isso nasce quebrado no modo claro. Não copie de lá.
+   Prefixo le- (lista de espera). Só consome tokens de theme.css.
 
    O markup é montado por scripts/components/lista-espera.js.
 ════════════════════════════════════════════════════════════ */
@@ -167,8 +165,7 @@
   width: 100%;
   font-family: var(--font); font-size: 14px; font-weight: 600;
   color: var(--on-brand);
-  /* --btn-metal-bg só existe no claro; no escuro o botão é ouro chapado. */
-  background: var(--btn-metal-bg, var(--gold));
+  background: var(--gold);
   border: none; border-radius: 12px;
   padding: 14px 20px;
   box-shadow: var(--btn-primary-glow);
@@ -198,8 +195,26 @@
 .le-sucesso-icone svg { width: 24px; height: 24px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 .le-sucesso p { font-size: 14px; line-height: 1.6; color: var(--ink-3); margin: 0 0 22px; }
 
+/* Mobile: card centralizado na vertical, com o mesmo respiro em cima
+   e embaixo (respeitando o notch e a home bar do iPhone). */
 @media (max-width: 520px) {
-  .le-overlay { padding: 12px; align-items: flex-end; }
-  .le-card { padding: 30px 22px 22px; border-radius: 20px; }
-  .le-titulo { font-size: 21px; }
+  .le-overlay {
+    align-items: center;
+    padding: max(16px, env(safe-area-inset-top)) 16px max(16px, env(safe-area-inset-bottom));
+  }
+  .le-card {
+    max-height: calc(100dvh - 32px);
+    padding: 26px 20px 22px;
+    border-radius: 20px;
+  }
+  .le-fechar { top: 14px; right: 14px; }
+  .le-eyebrow { margin-bottom: 10px; }
+  /* Título não passa por baixo do X */
+  .le-titulo { font-size: 21px; padding-right: 36px; }
+  .le-sub { font-size: 13.5px; margin-bottom: 22px; }
+  .le-form { gap: 14px; }
+  .le-campo { gap: 6px; }
+  .le-input { padding: 12px 14px; }
+  .le-opcao { padding: 12px 14px; }
+  .le-enviar { margin-top: 6px; }
 }
