@@ -73,7 +73,20 @@ nav.nav-minimal.scrolled {
   padding: 18px 0 18px calc((var(--nav-pill-w) - var(--nav-logo-w)) / 2);
 }
 @media (max-width: 640px) {
-  nav.nav-minimal { --nav-pill-w: 180px; }
+  /* No mobile o logo já nasce centralizado. Mesmo truque do padding-left:
+     a nav ocupa 100vw - 40px (breakpoint de 1020px em style.css), então
+     sobra metade do resto de cada lado. Ao rolar, o padding do .scrolled
+     assume e a pill fecha em volta do logo, que continua no centro.
+
+     Armadilha: o max-width precisa partir da largura real da nav, não
+     dos 1280px do desktop. Senão ele passa boa parte da transição
+     encolhendo "no vazio" (acima da largura da tela), a nav não estreita,
+     o padding sim, e o logo escorrega para a esquerda antes de voltar. */
+  nav.nav-minimal {
+    --nav-pill-w: 180px;
+    max-width: calc(100vw - 40px);
+    padding-left: calc((100vw - 40px - var(--nav-logo-w)) / 2);
+  }
 }
 
 /* ── Logo ── */

@@ -53,17 +53,12 @@
 }
 .le-barra.is-visivel { opacity: 1; transition-duration: 0.12s; }
 
+/* Pele liquid glass "icon": bloco LIQUID GLASS em style.css */
 .le-fechar {
   position: absolute; top: 16px; right: 16px;
   width: 32px; height: 32px; border-radius: 50%;
   display: flex; align-items: center; justify-content: center;
-  background: rgba(var(--veil-rgb), var(--a-veil-1));
-  border: 0.5px solid var(--line);
-  color: var(--ink-3);
-  cursor: pointer;
-  transition: background 0.2s, color 0.2s;
 }
-.le-fechar:hover { background: rgba(var(--veil-rgb), var(--a-veil-3)); color: var(--ink); }
 .le-fechar svg { width: 12px; height: 12px; stroke: currentColor; fill: none; stroke-width: 2.2; stroke-linecap: round; }
 
 /* ── Cabeçalho ── */
@@ -160,19 +155,14 @@
 }
 
 /* ── Botão ── */
+/* Pele liquid glass "primary": bloco LIQUID GLASS em style.css.
+   Aqui só o tamanho. Vale também para o .le-ok (Fechar do sucesso). */
 .le-enviar {
   margin-top: 4px;
   width: 100%;
   font-family: var(--font); font-size: 14px; font-weight: 600;
-  color: var(--on-brand);
-  background: var(--gold);
-  border: none; border-radius: 12px;
-  padding: 14px 20px;
-  box-shadow: var(--btn-primary-glow);
-  cursor: pointer;
-  transition: transform 0.15s, box-shadow 0.2s, opacity 0.2s;
+  padding: 15px 20px;
 }
-.le-enviar:hover { transform: translateY(-1px); box-shadow: var(--btn-primary-glow-hover); }
 .le-enviar:disabled { opacity: 0.6; cursor: default; transform: none; }
 
 .le-erro-geral {

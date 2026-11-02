@@ -454,3 +454,93 @@
   --h-muted:  var(--ink-3);
   --h-red:    var(--danger);
 }
+
+
+/* ════════════════════════════════════════════════════════════
+   LIQUID GLASS — material dos botões da página
+   Só cores aqui (regra de ouro deste arquivo); forma e estados
+   moram no bloco "Liquid glass" de style.css. Três variantes:
+
+   · primary   ações de conversão (CTA final, toast, envio do
+               formulário). Vidro âmbar, borda âmbar, linha de luz
+               no topo. É o único com cor: precisa ser a ação óbvia.
+   · secondary vidro fumê neutro, mesmo material com menos
+               intensidade (reservado; hoje nenhum botão de texto
+               secundário existe na página).
+   · icon      controles redondos (setas do carrossel e botões de
+               fechar): o secondary em formato circular.
+
+   Camadas de cada botão, de trás para frente: --lg-*-bg (corpo),
+   --lg-*-shadow (luz interna + sombra ambiente), ::before (linha de
+   luz no topo, --lg-*-spec) e ::after (brilho difuso, --lg-*-sheen).
+   Sem backdrop-filter, o corpo cai em --lg-*-solid (style.css).
+════════════════════════════════════════════════════════════ */
+:root {
+  --lg-blur:  blur(16px) saturate(160%);
+  --lg-ease:  cubic-bezier(0.2, 0.8, 0.2, 1);
+
+  /* ── primary ── */
+  --lg-p-ink:        #FFF6DF;                      /* quase branco, quente */
+  --lg-p-ink-shadow: 0 1px 1px rgba(70, 42, 0, .45);
+  --lg-p-bg:     linear-gradient(180deg,
+                   rgba(228, 156, 0, .30) 0%,
+                   rgba(228, 156, 0, .14) 52%,
+                   rgba(228, 156, 0, .20) 100%);
+  --lg-p-bg-hover: linear-gradient(180deg,
+                   rgba(240, 170, 20, .40) 0%,
+                   rgba(228, 156, 0, .20) 52%,
+                   rgba(228, 156, 0, .28) 100%);
+  --lg-p-solid:  #3A2A08;                          /* fallback sem blur */
+  --lg-p-border: rgba(242, 169, 0, .45);
+  --lg-p-border-hover: rgba(242, 169, 0, .70);
+  --lg-p-shadow:
+    inset 0 1px 0 rgba(255, 230, 160, .30),
+    inset 0 -1px 0 rgba(255, 255, 255, .04),
+    inset 0 -10px 18px -10px rgba(242, 169, 0, .35),
+    0 8px 28px rgba(242, 169, 0, .10),
+    0 2px 6px rgba(0, 0, 0, .35);
+  --lg-p-shadow-hover:
+    inset 0 1px 0 rgba(255, 240, 190, .40),
+    inset 0 -1px 0 rgba(255, 255, 255, .05),
+    inset 0 -12px 20px -10px rgba(242, 169, 0, .45),
+    0 10px 32px rgba(242, 169, 0, .16),
+    0 2px 6px rgba(0, 0, 0, .35);
+  --lg-p-spec:   linear-gradient(90deg,
+                   rgba(255, 255, 255, 0) 0%,
+                   rgba(255, 248, 225, .85) 50%,
+                   rgba(255, 255, 255, 0) 100%);
+  --lg-p-sheen:  radial-gradient(110% 80% at 50% -20%,
+                   rgba(255, 236, 190, .20) 0%,
+                   rgba(255, 236, 190, .05) 50%,
+                   rgba(255, 236, 190, 0) 72%);
+
+  /* ── secondary / icon (vidro fumê) ── */
+  --lg-s-ink:    rgba(255, 255, 255, .82);
+  --lg-s-ink-hover: #FFFFFF;
+  --lg-s-bg:     linear-gradient(180deg,
+                   rgba(255, 255, 255, .075) 0%,
+                   rgba(255, 255, 255, .035) 100%);
+  --lg-s-bg-hover: linear-gradient(180deg,
+                   rgba(255, 255, 255, .11) 0%,
+                   rgba(255, 255, 255, .05) 100%);
+  --lg-s-solid:  #1B1B1A;
+  --lg-s-border: rgba(255, 255, 255, .14);
+  --lg-s-border-hover: rgba(255, 255, 255, .26);
+  --lg-s-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, .16),
+    inset 0 -1px 0 rgba(255, 255, 255, .03),
+    0 6px 20px rgba(0, 0, 0, .28);
+  --lg-s-shadow-hover:
+    inset 0 1px 0 rgba(255, 255, 255, .24),
+    inset 0 -1px 0 rgba(255, 255, 255, .04),
+    0 8px 24px rgba(0, 0, 0, .32);
+  --lg-s-spec:   linear-gradient(90deg,
+                   rgba(255, 255, 255, 0) 0%,
+                   rgba(255, 255, 255, .55) 50%,
+                   rgba(255, 255, 255, 0) 100%);
+  --lg-s-sheen:  radial-gradient(110% 80% at 50% -20%,
+                   rgba(255, 255, 255, .10) 0%,
+                   rgba(255, 255, 255, 0) 65%);
+
+  --lg-focus: #F2A900;
+}
