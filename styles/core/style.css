@@ -567,8 +567,8 @@ h2 .accent { color: var(--brand-display); }
 .security-section.js-ready.reveal-3 .line-3 { stroke-dashoffset: 0; }
 .security-section.js-ready.reveal-4 .line-4 { stroke-dashoffset: 0; }
 
-/* Lock */
-.lock-container {
+/* Escudo — o SVG e as camadas estão comentados em index.html */
+.escudo-container {
   position: absolute;
   top: 50%; left: 50%;
   transform: translate(-50%, -50%);
@@ -577,38 +577,29 @@ h2 .accent { color: var(--brand-display); }
   z-index: 2;
 }
 
-/* Breathing glow */
-.lock-container::before {
-  content: '';
-  position: absolute;
-  top: 50%; left: 50%;
-  transform: translate(-50%, -50%);
-  width: 300px; height: 300px;
-  border-radius: 50%;
-  /* O glow respirando fazia parte do tratamento 3D. Sobre papel, luz
-     aditiva dourada não brilha — borra (mesma razão da Fase J). Token
-     com fallback: no escuro fica exatamente o gradiente de antes. */
-  background: var(--lock-glow-bg,
-    radial-gradient(circle, rgba(228,156,0,0.18) 0%, rgba(228,156,0,0.08) 40%, transparent 70%));
-  filter: blur(var(--lock-glow-blur, 20px));
-  z-index: -1;
-  animation: lock-breathe 4s ease-in-out infinite;
-  pointer-events: none;
-}
-@keyframes lock-breathe {
-  0%, 100% { transform: translate(-50%,-50%) scale(1);    opacity: 0.7; }
-  50%       { transform: translate(-50%,-50%) scale(1.15); opacity: 1;   }
-}
+.escudo-svg { width: 160px; height: auto; overflow: visible; position: relative; z-index: 1; color: var(--brand-ink); }
+.escudo-mascara { mask-type: alpha; }
 
-/* X.3: cor do line-art vem daqui, não de literal no SVG. */
-.lock-svg { width: 160px; height: auto; overflow: visible; position: relative; z-index: 1; color: var(--brand-ink); }
-.lock-shackle {
-  transform-box: view-box;
-  transform-origin: 64% 43.85%;   /* pé direito da haste, 64,57 no viewBox */
-  transition: transform 900ms cubic-bezier(0.34, 1.56, 0.64, 1);
+/* Os <use> herdam fill/stroke do grupo; a face sobrescreve só o fill. */
+.escudo-base   { stroke: currentColor; }
+.escudo-luz    { stroke: var(--escudo-luz); }
+.escudo-selo   { stroke: var(--escudo-selo); opacity: 0; transition: opacity 0.5s ease; }
+.escudo-base .escudo-face { fill: var(--escudo-face); stroke: none; }
+.escudo-luz  .escudo-face { fill: var(--escudo-luz-face); stroke: none; }
+/* O check é o foco do escudo: traço mais grosso que o 1.5 do contorno. */
+.escudo-svg use[href="#escudo-check"] { stroke-width: 2.5; }
+
+/* Selado: o contorno inteiro acende e o brilho pulsa uma vez. Remover a
+   classe (rolando de volta) apaga; adicionar de novo pulsa de novo. */
+.security-section.sealed .escudo-selo { opacity: 1; }
+.security-section.sealed .escudo-svg {
+  filter: drop-shadow(0 0 6px var(--escudo-selo-glow-fraco));
+  animation: escudo-sela 1.1s cubic-bezier(0.22, 1, 0.36, 1);
 }
-.security-section.unlocked .lock-shackle {
-  transform: rotate(40deg);
+@keyframes escudo-sela {
+  0%   { filter: drop-shadow(0 0 0 transparent); }
+  35%  { filter: drop-shadow(0 0 18px var(--escudo-selo-glow)); }
+  100% { filter: drop-shadow(0 0 6px var(--escudo-selo-glow-fraco)); }
 }
 
 
@@ -716,12 +707,11 @@ h2 .accent { color: var(--brand-display); }
     gap: 24px; align-items: center;
   }
   .diagram-lines { display: none; }
-  .lock-container {
+  .escudo-container {
     position: static;
     transform: none;
     width: auto; height: auto;
   }
-  .lock-container::before { display: none; }
   .branch {
     position: static;
     text-align: center !important;
@@ -729,7 +719,7 @@ h2 .accent { color: var(--brand-display); }
   }
   .branch-1 .branch-content p,
   .branch-3 .branch-content p { margin-left: 0; }
-  .lock-svg { width: 120px; }
+  .escudo-svg { width: 120px; }
   .sec-of-outer { padding: 0 0 32px; }
   .open-finance-compact { padding: 28px 24px; }
 
@@ -739,7 +729,7 @@ h2 .accent { color: var(--brand-display); }
      manda é só o .sec-in. Só opacity e transform: as duas animam no
      compositor, sem relayout, e é isso que deixa a entrada lisa. */
   .security-section.js-ready .security-header,
-  .security-section.js-ready .lock-container,
+  .security-section.js-ready .escudo-container,
   .security-section.js-ready .branch,
   .security-section.js-ready .sec-of-outer {
     opacity: 0 !important;
@@ -748,7 +738,7 @@ h2 .accent { color: var(--brand-display); }
                 transform 0.9s cubic-bezier(0.22, 1, 0.36, 1) !important;
   }
   .security-section.js-ready .security-header.sec-in,
-  .security-section.js-ready .lock-container.sec-in,
+  .security-section.js-ready .escudo-container.sec-in,
   .security-section.js-ready .branch.sec-in,
   .security-section.js-ready .sec-of-outer.sec-in {
     opacity: 1 !important;
@@ -758,15 +748,14 @@ h2 .accent { color: var(--brand-display); }
 
 /* ── Reduced motion ── */
 @media (prefers-reduced-motion: reduce) {
-  .lock-shackle { transition: none; }
+  .escudo-selo { transition: none; }
   .branch { transition: none; }
   .diagram-line { transition: none; stroke-dashoffset: 0; }
-  .lock-container::before { animation: none !important; }
+  .security-section.sealed .escudo-svg { animation: none; }
   .security-section.js-ready .branch { opacity: 1; transform: none; }
-  .security-section.unlocked .lock-shackle { transform: rotate(40deg); }
   .sec-of-outer { transition: none !important; opacity: 1 !important; transform: none !important; }
   .security-section.js-ready .security-header,
-  .security-section.js-ready .lock-container,
+  .security-section.js-ready .escudo-container,
   .security-section.js-ready .branch,
   .security-section.js-ready .sec-of-outer { transition: none !important; }
 }

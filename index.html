@@ -670,7 +670,7 @@
 
       <div class="security-diagram">
 
-        <!-- Bezier lines: start at lock edge, end 15px clear of branch text right/left edge -->
+        <!-- Bezier lines: start at shield edge, end 15px clear of branch text right/left edge -->
         <svg class="diagram-lines" viewBox="0 0 1000 380" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
           <path class="diagram-line line-1" d="M 400 195 C 368 168 340 86 285 54"   stroke="#E49C00" stroke-width="1" fill="none" stroke-linecap="round" opacity="0.45"/>
           <path class="diagram-line line-2" d="M 600 200 C 632 184 662 158 715 140" stroke="#E49C00" stroke-width="1" fill="none" stroke-linecap="round" opacity="0.45"/>
@@ -678,33 +678,61 @@
           <path class="diagram-line line-4" d="M 600 252 C 632 262 665 278 715 285" stroke="#E49C00" stroke-width="1" fill="none" stroke-linecap="round" opacity="0.45"/>
         </svg>
 
-        <!-- Lock — line-art, centered absolutely -->
-        <div class="lock-container">
-          <!-- Line-art em stroke 1.5, como todo o resto do line-art do projeto.
-               O corpo é uma COLUNA GREGA: capitel, fuste com estrias verticais e
-               base. A seção é sobre segurança numa fintech de narrativa grega —
-               o ícone carrega isso em vez de ser um cadeado de biblioteca.
-               Sem preenchimento, sem gradiente, sem sombra. A cor vem do CSS
-               (currentColor), então serve aos dois temas com o mesmo path. -->
-          <svg class="lock-svg" viewBox="0 0 100 130" xmlns="http://www.w3.org/2000/svg" aria-label="Cadeado em forma de coluna grega, ilustrativo de segurança" fill="none">
-            <g stroke="currentColor" stroke-width="1.5" fill="none"
-               stroke-linecap="round" stroke-linejoin="round">
-              <!-- Capitel e base: as duas lajes que fecham a coluna. Estreitas
-                   de propósito — capitel largo demais faz o conjunto ler como
-                   templo, não como cadeado. -->
-              <rect x="20" y="57" width="60" height="8" rx="1.5"/>
-              <rect x="20" y="105" width="60" height="8" rx="1.5"/>
-              <!-- Fuste -->
-              <path d="M 27 65 V 105 M 73 65 V 105"/>
-              <!-- Estrias: duas só, pra não disputar com o segredo -->
-              <path d="M 38 73 V 97 M 62 73 V 97"/>
-              <!-- Segredo -->
-              <circle cx="50" cy="79" r="4.5"/>
-              <path d="M 50 83.5 V 94"/>
-              <!-- Haste, mais estreita que o corpo (senão o conjunto lê como lanterna).
-                   Gira em .unlocked; o pivô no CSS acompanha o pé direito, 64,57. -->
-              <g class="lock-shackle">
-                <path d="M 36 57 V 42 A 14 14 0 0 1 64 42 V 57"/>
+        <!-- Escudo — line-art, centralizado em absoluto -->
+        <div class="escudo-container">
+          <!-- Escudo de silhueta tech (pico no topo, ombros chanfrados, laterais
+               retas que afinam até a ponta) com um check no centro, no
+               mesmo traço 1.5 do resto do line-art. As cores vêm do CSS.
+
+               Camadas, de baixo para cima:
+               1. base: face translúcida + traços em currentColor;
+               2. luz: a silhueta inteira em branco opaco, revelada só onde a
+                  máscara deixa. A máscara é uma lâmina dupla na diagonal, de
+                  bordas secas, que o script desloca com o scroll (ver
+                  .escudo-varredura). Onde ela passa, nada atrás aparece;
+               3. selo: os traços inteiros acesos, que aparecem em .sealed.
+
+               Os paths moram em <defs> e as camadas os reusam com <use>; os
+               ids levam o prefixo escudo- porque são globais na página. -->
+          <svg class="escudo-svg" viewBox="0 0 100 130" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Escudo com um check, ilustrativo de segurança" fill="none">
+            <defs>
+              <path id="escudo-contorno" d="M 50 8 L 80 17 L 88 25 V 62 C 88 88 72 106 50 122 C 28 106 12 88 12 62 V 25 L 20 17 Z"/>
+              <path id="escudo-chanfro"  d="M 50 15 L 76 23 L 82 29 V 62 C 82 84 68 99 50 113 C 32 99 18 84 18 62 V 29 L 24 23 Z"/>
+              <!-- Check, centrado na face do escudo. -->
+              <path id="escudo-check" d="M 36 63 L 46 73 L 65 52"/>
+
+              <!-- Lâminas: mask-type alpha (no CSS), então só a opacidade conta,
+                   e currentColor é opaco: bordas secas, sem degradê. O fill explícito
+                   é obrigatório, senão os rects herdam o fill="none" do <svg>.
+                   Retângulos verticais girados 35° viram faixas diagonais;
+                   transladar em x no eixo girado as leva do canto superior
+                   esquerdo até a ponta inferior direita. A secundária, mais
+                   fina, vem atrás da principal. -->
+              <mask id="escudo-mascara-luz" class="escudo-mascara" maskUnits="userSpaceOnUse" x="-20" y="-20" width="140" height="170">
+                <g transform="rotate(35 50 65)">
+                  <g class="escudo-varredura" transform="translate(-80 0)">
+                    <rect x="42" y="-85" width="16" height="300" fill="currentColor"/>
+                    <rect x="31" y="-85" width="5"  height="300" fill="currentColor"/>
+                  </g>
+                </g>
+              </mask>
+            </defs>
+
+            <g stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <g class="escudo-base">
+                <use href="#escudo-chanfro" class="escudo-face"/>
+                <use href="#escudo-contorno"/>
+                <use href="#escudo-chanfro"/>
+                <use href="#escudo-check"/>
+              </g>
+              <g class="escudo-luz" mask="url(#escudo-mascara-luz)">
+                <use href="#escudo-contorno" class="escudo-face"/>
+                <use href="#escudo-contorno"/>
+              </g>
+              <g class="escudo-selo">
+                <use href="#escudo-contorno"/>
+                <use href="#escudo-chanfro"/>
+                <use href="#escudo-check"/>
               </g>
             </g>
           </svg>
@@ -744,7 +772,7 @@
 
       </div><!-- /.security-diagram -->
 
-      <!-- Open Finance — inside sticky, fades in after lock opens -->
+      <!-- Open Finance — inside sticky, fades in after the shield seals -->
       <div class="sec-of-outer">
         <div class="open-finance-compact">
           <div class="of-content">
@@ -1422,8 +1450,7 @@
        progresso de rolagem dentro da seção não significa nada. Lá cada
        item entra sozinho quando chega na tela: IntersectionObserver
        marca .sec-in uma vez e para de observar, e o CSS do breakpoint
-       de 768px faz o fade + subida. O cadeado abre quando o card do
-       Open Finance entra, fechando a sequência como no desktop.
+       de 768px faz o fade + subida.
 
        Armadilha: o observer liga SEMPRE, não só quando a página abre
        estreita. O CSS que esconde os itens é por media query e vale na
@@ -1433,28 +1460,61 @@
        opacity 0. No desktop o .sec-in não tem efeito nenhum. */
     var mobile = window.matchMedia('(max-width: 768px)');
     var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    var itens  = sec.querySelectorAll('.security-header, .lock-container, .branch, .sec-of-outer');
+    var itens  = sec.querySelectorAll('.security-header, .escudo-container, .branch, .sec-of-outer');
     if (reduce || !('IntersectionObserver' in window)) {
       itens.forEach(function (el) { el.classList.add('sec-in'); });
-      if (mobile.matches) sec.classList.add('unlocked');
     } else {
       var ioSec = new IntersectionObserver(function (entries) {
         entries.forEach(function (e) {
           if (!e.isIntersecting) return;
           e.target.classList.add('sec-in');
-          if (e.target === ofOuter && mobile.matches) {
-            setTimeout(function () { sec.classList.add('unlocked'); }, 350);
-          }
           ioSec.unobserve(e.target);
         });
       }, { threshold: 0.25, rootMargin: '0px 0px -8% 0px' });
       itens.forEach(function (el) { ioSec.observe(el); });
     }
 
+    /* ESCUDO — corte de luz guiado pelo scroll.
+       alvo (0..1) é onde a luz deveria estar; atual persegue o alvo com
+       um lerp num rAF, para a roda do mouse (que rola em degraus) não
+       deixar a luz aos trancos. O loop só roda enquanto há diferença e
+       para sozinho. Desktop: a passada ocupa o progress de 0.15 a 0.82
+       da seção sticky. Mobile: vai do escudo entrando pelo fundo da tela
+       até o centro dele chegar ao meio da viewport. Quando a luz termina,
+       .sealed acende o escudo inteiro; rolando de volta, rebobina.
+       Com reduced motion o escudo já nasce selado e a luz não anda. */
+    var escudo     = sec.querySelector('.escudo-svg');
+    var varreduras = sec.querySelectorAll('.escudo-varredura');
+    var LUZ_INI = -80, LUZ_FIM = 82;   // x da lâmina no eixo girado: fora do escudo nos dois extremos
+    var alvo = 0, atual = 0, raf = 0;
+
+    function desenhaLuz() {
+      var x = (LUZ_INI + (LUZ_FIM - LUZ_INI) * atual).toFixed(2);
+      varreduras.forEach(function (g) { g.setAttribute('transform', 'translate(' + x + ' 0)'); });
+      sec.classList.toggle('sealed', atual >= 0.995);
+    }
+    function passo() {
+      atual += (alvo - atual) * 0.12;
+      if (Math.abs(alvo - atual) < 0.001) { atual = alvo; raf = 0; }
+      else raf = requestAnimationFrame(passo);
+      desenhaLuz();
+    }
+    function moveLuz(p) {
+      alvo = Math.max(0, Math.min(1, p));
+      if (!raf) raf = requestAnimationFrame(passo);
+    }
+    if (reduce) sec.classList.add('sealed');
+
     function update() {
-      if (mobile.matches) return;
-      var rect = sec.getBoundingClientRect();
       var vh = window.innerHeight;
+      if (mobile.matches) {
+        if (!escudo || reduce) return;
+        var r = escudo.getBoundingClientRect();
+        var centro = r.top + r.height / 2;
+        moveLuz((vh + r.height / 2 - centro) / (vh / 2 + r.height / 2));
+        return;
+      }
+      var rect = sec.getBoundingClientRect();
       var maxScroll = rect.height - vh;
       if (maxScroll <= 0) return;
       var scrolled = Math.max(0, -rect.top);
@@ -1464,11 +1524,12 @@
       sec.classList.toggle('reveal-2', progress >= 0.32);
       sec.classList.toggle('reveal-3', progress >= 0.48);
       sec.classList.toggle('reveal-4', progress >= 0.64);
-      sec.classList.toggle('unlocked',  progress >= 0.82);
       if (ofOuter) ofOuter.classList.toggle('of-visible', progress >= 0.82);
+      if (!reduce) moveLuz((progress - 0.15) / (0.82 - 0.15));
     }
 
     window.addEventListener('scroll', update, { passive: true });
+    window.addEventListener('resize', update);
     update();
   })();
 

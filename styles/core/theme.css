@@ -366,6 +366,15 @@
   --luz-aresta: inset 0 1px 0 rgba(255,255,255,var(--a-spec));
   --spec-hairline: var(--luz-aresta);   /* alias — nomes antigos continuam válidos */
 
+  /* Escudo da seção de segurança: face translúcida, corte de luz
+     (branco opaco, sem degradê) e o brilho do selo. */
+  --escudo-face:           rgba(var(--brand-tint-rgb), .06);
+  --escudo-luz:            #FFFFFF;
+  --escudo-luz-face:       #FFFFFF;
+  --escudo-selo:           var(--brand-bright);   /* o selo segue dourado */
+  --escudo-selo-glow:      rgba(var(--brand-tint-rgb), .60);
+  --escudo-selo-glow-fraco: rgba(var(--brand-tint-rgb), .28);
+
   --glow-brand-sm: 0 0 14px rgba(var(--brand-tint-rgb), .30);
   --glow-brand-md: 0 0 22px rgba(var(--brand-tint-rgb), .22);
   --glow-brand-lg: 0 0 60px rgba(var(--brand-tint-rgb), .22),
