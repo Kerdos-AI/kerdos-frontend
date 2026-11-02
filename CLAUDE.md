@@ -25,7 +25,7 @@ Não há testes automatizados. Para validar uma mudança visual, abra a página 
 
 | Caminho | O que é |
 | --- | --- |
-| `index.html` | **A landing inteira** (~880 linhas), servida na raiz (`kerdos.com.br/`). Seções: hero, `#como-funciona`, `#security-section`, `#quem-somos` (equipe), `#comecar` (CTA final). Tem um `<script>` inline no fim (navbar, scroll reveal, typewriter). |
+| `index.html` | **A landing inteira** (~880 linhas), servida na raiz (`kerdosfinance.com/`). Seções: hero, `#como-funciona`, `#security-section`, `#quem-somos` (equipe), `#comecar` (CTA final). Tem um `<script>` inline no fim (navbar, scroll reveal, typewriter). |
 | `styles/core/theme.css` | **Fonte única de cor.** Primeira folha de estilo carregada. |
 | `styles/core/style.css` | Estilos gerais da página. |
 | `styles/core/scrollbar.css` | Scrollbar dourada. Carregada **por último**. |
@@ -60,7 +60,7 @@ Não há testes automatizados. Para validar uma mudança visual, abra a página 
 - A validação do front é conforto; a segurança está no `api/waitlist.js`. Não exponha a URL do n8n no navegador.
 
 ### SEO
-- A URL canônica `https://kerdos.com.br/` aparece em `index.html` (canonical, `og:url`, JSON-LD), `sitemap.xml` e `llms.txt`. Se mudar uma, mude todas.
+- A URL canônica `https://kerdosfinance.com/` aparece em `index.html` (canonical, `og:url`, JSON-LD), `sitemap.xml` e `llms.txt`. Se mudar uma, mude todas.
 - Ao alterar o conteúdo da página, atualize o `lastmod` do `sitemap.xml` e, se for o caso, o `llms.txt`.
 - O JSON-LD em `index.html` descreve só o que existe. Não invente preço, avaliação ou recurso lançado.
 

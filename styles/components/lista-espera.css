@@ -15,9 +15,13 @@
   backdrop-filter: blur(10px) saturate(130%);
   -webkit-backdrop-filter: blur(10px) saturate(130%);
   opacity: 0; visibility: hidden;
-  transition: opacity 0.28s, visibility 0.28s;
+  /* Fechar: rápido. Abrir: um pouco mais longo (regra .is-open). */
+  transition: opacity 0.22s ease, visibility 0s linear 0.22s;
 }
-.le-overlay.is-open { opacity: 1; visibility: visible; }
+.le-overlay.is-open {
+  opacity: 1; visibility: visible;
+  transition: opacity 0.32s ease, visibility 0s;
+}
 
 .le-card {
   position: relative;
@@ -31,10 +35,68 @@
   box-shadow: var(--elev-3);
   font-family: var(--font);
   color: var(--ink);
-  transform: translateY(18px) scale(0.97);
-  transition: transform 0.38s var(--ease-premium);
+  /* Entrada: o card sobe, cresce e ganha nitidez ao mesmo tempo. */
+  opacity: 0;
+  transform: translateY(28px) scale(0.92);
+  filter: blur(6px);
+  transform-origin: 50% 70%;
+  transition:
+    opacity 0.18s ease,
+    transform 0.22s ease-in,
+    filter 0.18s ease;
 }
-.le-overlay.is-open .le-card { transform: none; }
+.le-overlay.is-open .le-card {
+  opacity: 1;
+  transform: none;
+  filter: none;
+  transition:
+    opacity 0.32s ease,
+    transform 0.56s var(--ease-premium),
+    filter 0.4s ease;
+}
+
+/* Conteúdo entra em cascata logo depois do card.
+   Os delays só existem no estado aberto: ao fechar, tudo sai junto.
+   O botão fica de fora para não sobrescrever o hover do liquid glass. */
+.le-eyebrow, .le-titulo, .le-sub,
+.le-form > .le-campo {
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.15s ease, transform 0.15s ease;
+}
+.le-overlay.is-open .le-eyebrow,
+.le-overlay.is-open .le-titulo,
+.le-overlay.is-open .le-sub,
+.le-overlay.is-open .le-form > .le-campo {
+  opacity: 1;
+  transform: none;
+  transition:
+    opacity 0.42s ease var(--le-atraso, 0s),
+    transform 0.6s var(--ease-premium) var(--le-atraso, 0s);
+}
+.le-eyebrow                         { --le-atraso: 0.10s; }
+.le-titulo                          { --le-atraso: 0.15s; }
+.le-sub                             { --le-atraso: 0.20s; }
+.le-form > div.le-campo:nth-of-type(1) { --le-atraso: 0.25s; }
+.le-form > div.le-campo:nth-of-type(2) { --le-atraso: 0.29s; }
+.le-form > div.le-campo:nth-of-type(3) { --le-atraso: 0.33s; }
+.le-form > .le-grupo                { --le-atraso: 0.37s; }
+
+@media (prefers-reduced-motion: reduce) {
+  .le-card,
+  .le-eyebrow, .le-titulo, .le-sub,
+  .le-form > .le-campo {
+    transform: none !important;
+    filter: none !important;
+  }
+  .le-overlay.is-open .le-card,
+  .le-overlay.is-open .le-eyebrow,
+  .le-overlay.is-open .le-titulo,
+  .le-overlay.is-open .le-sub,
+  .le-overlay.is-open .le-form > .le-campo {
+    transition: opacity 0.2s ease;
+  }
+}
 
 /* Barra de rolagem própria do card. A nativa é desenhada pelo
    navegador de ponta a ponta e atravessa a curva dos cantos; esta
@@ -171,9 +233,13 @@
 .le-erro-geral:empty { display: none; }
 
 /* ── Estado de sucesso ── */
-.le-sucesso { display: none; text-align: center; padding: 12px 0 6px; }
+.le-sucesso { display: none; text-align: center; padding: 8px 0 4px; }
+/* Na tela de sucesso só fica o "Fechar": sem o X e sem a etiqueta. */
 .le-card.enviado .le-form,
-.le-card.enviado .le-sub { display: none; }
+.le-card.enviado .le-titulo,
+.le-card.enviado .le-sub,
+.le-card.enviado .le-fechar,
+.le-card.enviado .le-eyebrow { display: none; }
 .le-card.enviado .le-sucesso { display: block; }
 .le-sucesso-icone {
   width: 56px; height: 56px; margin: 4px auto 18px;
@@ -183,7 +249,79 @@
   color: var(--brand-ink);
 }
 .le-sucesso-icone svg { width: 24px; height: 24px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.le-sucesso-titulo {
+  font-size: 22px; font-weight: 600; line-height: 1.25; letter-spacing: -0.3px;
+  margin: 0 0 8px;
+  outline: none; /* recebe foco por script só para o leitor de tela */
+}
 .le-sucesso p { font-size: 14px; line-height: 1.6; color: var(--ink-3); margin: 0 0 22px; }
+
+/* Convite para o Instagram: linha clicável, texto à esquerda e
+   botão com o ícone à direita. */
+.le-insta {
+  display: flex; align-items: center; gap: 14px;
+  padding: 14px 14px 14px 18px;
+  margin-bottom: 14px;
+  border: 0.5px solid var(--line-strong);
+  border-radius: 16px;
+  background: rgba(var(--veil-rgb), var(--a-veil-1));
+  text-align: left;
+  text-decoration: none;
+  color: var(--ink);
+  transition: border-color 0.2s, background 0.2s;
+}
+.le-insta:focus-visible {
+  outline: none;
+  border-color: var(--brand-ink);
+  box-shadow: 0 0 0 3px rgba(var(--brand-tint-rgb), 0.18);
+}
+.le-insta-texto { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.le-insta-chamada { font-size: 12.5px; color: var(--ink-3); }
+.le-insta-perfil {
+  font-size: 15px; font-weight: 600; color: var(--brand-ink);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.le-insta-botao {
+  margin-left: auto; flex: none;
+  width: 44px; height: 44px; border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  border: 0.5px solid var(--border-gold);
+  background: rgba(var(--brand-tint-rgb), 0.08);
+  color: var(--brand-ink);
+  transition: background 0.2s, transform 0.2s var(--ease-premium);
+}
+.le-insta-botao svg {
+  width: 22px; height: 22px;
+  stroke: currentColor; fill: none; stroke-width: 1.8;
+  stroke-linecap: round; stroke-linejoin: round;
+}
+.le-insta-botao .le-insta-ponto { fill: currentColor; stroke: none; }
+@media (hover: hover) and (pointer: fine) {
+  .le-insta:hover { border-color: var(--border-gold); background: rgba(var(--brand-tint-rgb), 0.05); }
+  .le-insta:hover .le-insta-botao { background: rgba(var(--brand-tint-rgb), 0.16); transform: scale(1.06); }
+}
+.le-insta:active .le-insta-botao { transform: scale(0.95); }
+
+/* Entrada da mensagem de sucesso: sobe em cascata. */
+@keyframes le-surgir {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: none; }
+}
+@keyframes le-check {
+  from { opacity: 0; transform: scale(0.6); }
+  to   { opacity: 1; transform: none; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .le-card.enviado .le-sucesso-icone { animation: le-check 0.5s var(--ease-premium) backwards; }
+  .le-card.enviado .le-sucesso-titulo,
+  .le-card.enviado .le-sucesso p,
+  .le-card.enviado .le-insta,
+  .le-card.enviado .le-ok { animation: le-surgir 0.5s var(--ease-premium) backwards; }
+  .le-card.enviado .le-sucesso-titulo { animation-delay: 0.08s; }
+  .le-card.enviado .le-sucesso p      { animation-delay: 0.14s; }
+  .le-card.enviado .le-insta          { animation-delay: 0.22s; }
+  .le-card.enviado .le-ok             { animation-delay: 0.28s; }
+}
 
 /* Mobile: card centralizado na vertical, com o mesmo respiro em cima
    e embaixo (respeitando o notch e a home bar do iPhone). */
@@ -192,7 +330,10 @@
     align-items: center;
     padding: max(16px, env(safe-area-inset-top)) 16px max(16px, env(safe-area-inset-bottom));
   }
+  /* No celular o card vem mais de baixo, como uma folha subindo. */
   .le-card {
+    transform: translateY(64px) scale(0.96);
+    transform-origin: 50% 100%;
     max-height: calc(100dvh - 32px);
     padding: 26px 20px 22px;
     border-radius: 20px;
@@ -207,4 +348,8 @@
   .le-input { padding: 12px 14px; }
   .le-opcao { padding: 12px 14px; }
   .le-enviar { margin-top: 6px; }
+  .le-sucesso-titulo { font-size: 20px; }
+  .le-sucesso p { font-size: 13.5px; margin-bottom: 18px; }
+  .le-insta { padding: 12px 12px 12px 16px; gap: 12px; }
+  .le-insta-perfil { font-size: 14.5px; }
 }

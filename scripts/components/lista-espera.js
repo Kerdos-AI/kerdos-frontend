@@ -21,6 +21,7 @@
   'use strict';
 
   var ENDPOINT = '/api/waitlist';
+  var INSTAGRAM_URL = 'https://www.instagram.com/kerdos.finance/';
 
   var LIMITES = { nome: 120, email: 160 };
 
@@ -85,7 +86,18 @@
 
       '<div class="le-sucesso" aria-live="polite">' +
         '<div class="le-sucesso-icone"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>' +
-        '<p>Pronto, você está na lista. Assim que a Kerdos abrir, você fica sabendo antes de todo mundo.</p>' +
+        '<h3 class="le-sucesso-titulo" tabindex="-1">Inscrição confirmada!</h3>' +
+        '<p>Você está na lista de espera da Kerdos. Assim que abrirmos, você fica sabendo antes de todo mundo.</p>' +
+        /* Convite para o Instagram: a linha inteira é o link. */
+        '<a class="le-insta" href="' + INSTAGRAM_URL + '" target="_blank" rel="noopener noreferrer">' +
+          '<span class="le-insta-texto">' +
+            '<span class="le-insta-chamada">Enquanto isso, siga a gente</span>' +
+            '<span class="le-insta-perfil">@kerdos.finance</span>' +
+          '</span>' +
+          '<span class="le-insta-botao" aria-hidden="true">' +
+            '<svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4.2"/><circle class="le-insta-ponto" cx="17.4" cy="6.6" r="1.1"/></svg>' +
+          '</span>' +
+        '</a>' +
         '<button type="button" class="le-enviar le-ok">Fechar</button>' +
       '</div>' +
     '</div>';
@@ -162,10 +174,14 @@
   function abrir() {
     if (!overlay) montar();
     ultimoFoco = document.activeElement;
+    /* Força o navegador a registrar o estado fechado antes de abrir;
+       sem isso, na primeira abertura (overlay recém-criado) a
+       animação de entrada não roda. */
+    void overlay.offsetWidth;
     overlay.classList.add('is-open');
     overlay.setAttribute('aria-hidden', 'false');
     document.documentElement.style.overflow = 'hidden';
-    setTimeout(function () { form.elements.nome.focus(); }, 60);
+    setTimeout(function () { form.elements.nome.focus({ preventScroll: true }); }, 60);
     /* Se o card rola, a barra pisca na abertura para avisar que há mais. */
     setTimeout(function () {
       atualizarBarra();
@@ -257,7 +273,7 @@
     }
 
     /* Honeypot preenchido: finge sucesso para o robô não aprender. */
-    if (dados.site) { card.classList.add('enviado'); return; }
+    if (dados.site) { mostrarSucesso(); return; }
 
     var botao = form.querySelector('.le-enviar');
     enviando = true;
@@ -265,7 +281,7 @@
     botao.textContent = 'Enviando…';
 
     enviar(dados).then(function () {
-      card.classList.add('enviado');
+      mostrarSucesso();
       form.reset();
     }).catch(function () {
       erroGeral.textContent = 'Não conseguimos enviar agora. Tente de novo em instantes.';
@@ -274,6 +290,15 @@
       botao.disabled = false;
       botao.textContent = 'Quero ser avisado';
     });
+  }
+
+  /* Troca o formulário pela mensagem de sucesso e leva o foco
+     (e o leitor de tela) até ela. */
+  function mostrarSucesso() {
+    card.classList.add('enviado');
+    card.scrollTop = 0;
+    card.querySelector('.le-sucesso-titulo').focus({ preventScroll: true });
+    atualizarBarra();
   }
 
   function enviar(dados) {

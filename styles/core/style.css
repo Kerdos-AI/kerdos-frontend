@@ -865,7 +865,9 @@ h2 .accent { color: var(--brand-display); }
    pedindo atenção. */
 .cta-final { position: relative; z-index: 1; padding: 120px 80px 130px; }
 .cta-final-inner { max-width: 720px; margin: 0 auto; text-align: center; }
-.cta-final h2 { margin-bottom: 20px; }
+/* balance: distribui as palavras entre as linhas e evita palavra sozinha */
+.cta-final h2 { margin-bottom: 20px; text-wrap: balance; }
+.cta-final h2 .accent { display: inline-block; text-wrap: balance; }
 .cta-final-lead { font-size: 17px; color: var(--muted); line-height: 1.7; font-weight: 300; max-width: 520px; margin: 0 auto 36px; }
 .cta-final-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
 @media (max-width: 1020px) { .cta-final { padding: 88px 24px 96px; } }

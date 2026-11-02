@@ -26,8 +26,9 @@ O site é uma única página (landing). Não existe cadastro, login, página de 
 
 ## Páginas
 
-- [Landing da Kerdos Finance](https://kerdos.com.br/): proposta de valor, como funciona cada agente, segurança, equipe e lista de espera.
+- [Landing da Kerdos Finance](https://kerdosfinance.com/): proposta de valor, como funciona cada agente, segurança, equipe e lista de espera.
 
 ## Contato
 
 - E-mail: kerdosfinance@gmail.com
+- Instagram: [@kerdos.finance](https://www.instagram.com/kerdos.finance/)
