@@ -1819,6 +1819,22 @@ h2 .accent { color: var(--brand-display); }
 @media (max-width: 860px) {
   .hiw-pl-corpo { grid-template-columns: 1fr; gap: 16px; }
 }
+/* Celulares estreitos (Galaxy A55 = 360px): as pílulas da topbar não
+   encolhiam e o mockup ficava ~30px mais largo que o card, cortando a
+   lateral direita. Aqui o card perde respiro, a topbar fica compacta e,
+   em último caso, a pílula corta com reticências em vez de vazar. */
+@media (max-width: 600px) {
+  #hiw-card-4 .hiw-card-inner { padding: 16px; }
+  .hiw-pl-app { min-width: 0; }
+  .hiw-pl-topbar { gap: 6px; padding: 10px 12px; }
+  .hiw-pl-nome { min-width: 0; font-size: 12px; }
+  .hiw-pl-pill { flex-shrink: 1; min-width: 0; gap: 5px; padding: 4px 9px; font-size: 10.5px; }
+  .hiw-pl-pill > span { overflow: hidden; text-overflow: ellipsis; }
+  .hiw-pl-pill-xp { flex-shrink: 0; }
+  .hiw-pl-corpo { padding: 14px 12px; }
+  .hiw-pl-face { padding: 14px; }
+  .hiw-pl-mod { gap: 9px; }
+}
 @media (prefers-reduced-motion: reduce) {
   .hiw-pl-face { transition: none; }
   .hiw-pl-mod.is-destravando { animation: none; }
