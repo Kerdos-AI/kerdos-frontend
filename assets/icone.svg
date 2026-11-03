@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
+  <!-- Favicon da Kerdos: o Ω do wordmark (mesmos paths da navbar) sobre o
+       preto da marca. O Google recorta o ícone em círculo nos resultados;
+       o Ω tem margem para caber inteiro no círculo inscrito, com os
+       "pezinhos" visíveis. Cores = tokens surface-0 e brand de theme.css.
+       (Comentário XML não aceita dois hifens seguidos: não cite o token com eles.) -->
+  <rect width="48" height="48" fill="#0C0C0B"/>
+  <g fill="#E49C00" transform="translate(24 24) scale(1.05) translate(-110.8 -15)">
+    <path d="M110.8 0C112.305 0 113.759 0.222176 115.13 0.634766L113.593 4.30371C112.701 4.0714 111.765 3.94727 110.8 3.94727C104.696 3.94727 99.7471 8.8958 99.7471 15C99.7471 19.8906 102.924 24.0388 107.326 25.4951V30H98.7998V26.6846H101.394C97.9825 23.9351 95.7998 19.7223 95.7998 15C95.7998 6.71573 102.516 4.51009e-07 110.8 0Z"/>
+    <path d="M119.021 2.45215C123.104 5.13255 125.8 9.75151 125.8 15C125.8 19.7223 123.618 23.9351 120.207 26.6846H123.115V30H114.432V25.4414C118.752 23.9389 121.853 19.8319 121.853 15C121.853 11.3973 120.129 8.19747 117.461 6.17969L119.021 2.45215Z"/>
+  </g>
+</svg>
