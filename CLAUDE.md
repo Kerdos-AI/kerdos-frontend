@@ -34,6 +34,7 @@ Não há testes automatizados. Para validar uma mudança visual, abra a página 
 | `scripts/components/*.js` | `lista-espera.js` (popup), `how-it-works.js` (animações dos cards), `swipe.js` (gesto mobile), `cursor.js`, `app-loader.js`. |
 | `api/waitlist.js` | Validação, honeypot, rate limit e proxy para o n8n. |
 | `llms.txt`, `robots.txt`, `sitemap.xml` | SEO e descrição para LLMs. |
+| `google783eca2e08cfe190.html` | Verificação do Google Search Console. **Não apague**: sem ele o site perde a verificação. |
 | `vercel.json` | Headers de segurança, redirect 308 das URLs antigas (`/pages/*`, `/home.html`) para `/` e cache de 7 dias em `/assets/`. |
 
 ## Regras do projeto
