@@ -782,6 +782,10 @@ h2 .accent { color: var(--brand-display); }
 .team-card.tc-right   { transform: translateX(460px) scale(0.84);  opacity: 0.28; z-index: 2; pointer-events: none; filter: blur(0.8px); }
 .team-photo { width: 100%; height: 220px; background: linear-gradient(145deg, var(--surface-2) 0%, var(--surface-1) 100%); display: flex; align-items: center; justify-content: center; border-bottom: 0.5px solid var(--border); position: relative; overflow: hidden; }
 .team-photo::after { content: ''; position: absolute; inset: 0; background: linear-gradient(135deg, rgba(228,156,0,0.04), transparent 60%); }
+/* Fotos da equipe: arquivo original (sem recompressão), recortado por object-fit.
+   --foco posiciona o rosto no card (paisagem); --foco-popup no popup (retrato, desktop). */
+.team-photo img, .team-popup-photo img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: var(--foco, 50% 30%); }
+.team-popup-photo img { object-position: var(--foco-popup, var(--foco, 50% 30%)); }
 .photo-placeholder { display: flex; flex-direction: column; align-items: center; gap: 10px; opacity: 0.3; }
 .photo-circle { width: 56px; height: 56px; border-radius: 50%; border: 1.5px dashed var(--muted2); display: flex; align-items: center; justify-content: center; }
 .photo-circle svg { width: 22px; height: 22px; stroke: var(--muted2); fill: none; stroke-width: 1.3; }
@@ -1252,6 +1256,7 @@ h2 .accent { color: var(--brand-display); }
   .team-card.tc-right { transform: translateX(340px)  scale(0.84); }
   .team-popup-card { flex-direction: column; width: 92vw; }
   .team-popup-photo { width: 100%; min-width: unset; height: 200px; border-right: none; border-bottom: 0.5px solid var(--border); }
+  .team-popup-photo img { object-position: var(--foco, 50% 30%); }
   .team-popup-body { padding: 24px 22px 28px; justify-content: flex-start; }
   nav { width: calc(100vw - 40px); }
   nav.scrolled { max-width: calc(100vw - 40px); }
