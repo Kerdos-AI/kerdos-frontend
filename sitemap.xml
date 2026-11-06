@@ -6,7 +6,12 @@
 -->
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
+<<<<<<< HEAD
     <loc>https://kerdosfinance.com/</loc>
     <lastmod>2026-11-06</lastmod>
+=======
+    <loc>https://www.kerdosfinance.com/</loc>
+    <lastmod>2026-11-03</lastmod>
+>>>>>>> 9e53e836e605e607e3cb9404dd97600bd02b6ab0
   </url>
 </urlset>

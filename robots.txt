@@ -10,4 +10,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://kerdosfinance.com/sitemap.xml
+Sitemap: https://www.kerdosfinance.com/sitemap.xml
